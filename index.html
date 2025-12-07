@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Concept Art Gallery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 16px;
+      background: #05060a;
+      color: #eee;
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+
+    p.subtitle {
+      font-size: 12px;
+      color: #aaa;
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+
+    /* ギャラリー全体 */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      grid-gap: 8px;
+    }
+
+    /* 各サムネイル枠 */
+    .item {
+      position: relative;
+      overflow: hidden;
+      border-radius: 8px;
+      background: #111;
+      padding-top: 70%; /* アスペクト比固定（縦横比） */
+    }
+
+    /* 中の画像を枠いっぱいに表示 */
+    .item img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .item:hover img {
+      transform: scale(1.03);
+    }
+
+    /* タイトルラベル */
+    .item span {
+      position: absolute;
+      left: 8px;
+      bottom: 8px;
+      font-size: 11px;
+      color: #fff;
+      text-shadow: 0 0 4px rgba(0,0,0,0.8);
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Concept Art Gallery</h1>
+  <p class="subtitle">nod9696 / concept art</p>
+
+  <div class="grid">
+
+    <!-- ↓ここをコピペして増やす。ファイル名とタイトルだけ変える -->
+
+    <div class="item">
+      <img src="images/art01.jpg" alt="">
+      <span>Art 01</span>
+    </div>
+
+    <div class="item">
+      <img src="images/art02.jpg" alt="">
+      <span>Art 02</span>
+    </div>
+
+    <div class="item">
+      <img src="images/art03.jpg" alt="">
+      <span>Art 03</span>
+    </div>
+
+    <!-- ↑アップした枚数ぶんだけ増やせる -->
+
+  </div>
+</body>
+</html>
