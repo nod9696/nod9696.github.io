@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>カレンダー タスク＆活動提案</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 16px;
+      background: #05060a;
+      color: #eee;
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      min-height: 100vh;
+    }
+
+    a { color: #7ab4ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .nav {
+      font-size: 12px;
+      color: #aaa;
+      margin-bottom: 20px;
+    }
+
+    h1 { font-size: 20px; margin-bottom: 4px; }
+    .subtitle { font-size: 12px; color: #aaa; margin-top: 0; margin-bottom: 24px; }
+
+    /* ---- 設定パネル ---- */
+    .config-panel {
+      background: #0e1117;
+      border: 1px solid #2a2f3a;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 24px;
+      max-width: 560px;
+    }
+    .config-panel h2 { font-size: 14px; margin: 0 0 12px; color: #ccc; }
+    .config-panel label { font-size: 12px; color: #aaa; display: block; margin-bottom: 4px; }
+    .config-panel input {
+      width: 100%;
+      padding: 8px 10px;
+      background: #181c24;
+      border: 1px solid #2a2f3a;
+      border-radius: 6px;
+      color: #eee;
+      font-size: 13px;
+      margin-bottom: 12px;
+      outline: none;
+    }
+    .config-panel input:focus { border-color: #4a7fff; }
+    .config-panel .hint { font-size: 11px; color: #666; margin-top: -8px; margin-bottom: 12px; }
+
+    /* ---- ボタン ---- */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn:disabled { opacity: 0.4; cursor: default; }
+    .btn-primary { background: #4a7fff; color: #fff; }
+    .btn-danger  { background: #c0392b; color: #fff; }
+    .btn-sm { padding: 5px 12px; font-size: 12px; font-weight: 500; }
+
+    /* ---- サインイン エリア ---- */
+    #signin-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .user-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #0e1117;
+      border: 1px solid #2a2f3a;
+      border-radius: 20px;
+      padding: 6px 12px 6px 6px;
+      font-size: 12px;
+    }
+    .user-badge img { width: 24px; height: 24px; border-radius: 50%; }
+
+    /* ---- メインレイアウト ---- */
+    #app { display: none; }
+    #app.visible { display: block; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 680px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* ---- カード ---- */
+    .card {
+      background: #0e1117;
+      border: 1px solid #2a2f3a;
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .card h3 {
+      font-size: 13px;
+      color: #aaa;
+      margin: 0 0 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* ---- イベントリスト ---- */
+    .event-list { list-style: none; margin: 0; padding: 0; }
+    .event-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid #1a1f2a;
+    }
+    .event-item:last-child { border-bottom: none; }
+    .event-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      margin-top: 5px;
+      flex-shrink: 0;
+      background: #4a7fff;
+    }
+    .event-dot.allday { background: #9b59b6; }
+    .event-dot.busy   { background: #e74c3c; }
+    .event-info { flex: 1; min-width: 0; }
+    .event-title { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .event-time  { font-size: 11px; color: #888; margin-top: 2px; }
+    .event-day-header {
+      font-size: 11px;
+      color: #5a7fff;
+      font-weight: 600;
+      margin: 10px 0 4px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #1e2535;
+    }
+
+    /* ---- 提案カード ---- */
+    .suggestion-list { list-style: none; margin: 0; padding: 0; }
+    .suggestion-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid #1a1f2a;
+    }
+    .suggestion-item:last-child { border-bottom: none; }
+    .suggestion-icon { font-size: 18px; flex-shrink: 0; }
+    .suggestion-body { flex: 1; }
+    .suggestion-title { font-size: 13px; font-weight: 600; }
+    .suggestion-reason { font-size: 11px; color: #888; margin-top: 3px; line-height: 1.5; }
+    .tag {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 600;
+      margin-top: 5px;
+    }
+    .tag-task     { background: #1a3a6a; color: #7ab4ff; }
+    .tag-activity { background: #1a3a2a; color: #5dba7a; }
+    .tag-rest     { background: #2a1a3a; color: #c37aff; }
+    .tag-prep     { background: #3a2a1a; color: #ffb45a; }
+
+    /* ---- 空き時間バー ---- */
+    .free-slots { margin-top: 4px; }
+    .slot-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-size: 12px;
+    }
+    .slot-bar-bg {
+      flex: 1; height: 8px;
+      background: #1a1f2a;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .slot-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #4a7fff, #7ab4ff);
+    }
+    .slot-bar-fill.busy { background: linear-gradient(90deg, #c0392b, #e74c3c); }
+    .slot-label { width: 80px; color: #aaa; flex-shrink: 0; }
+    .slot-pct   { width: 36px; text-align: right; color: #888; flex-shrink: 0; font-size: 11px; }
+
+    /* ---- ローディング / エラー ---- */
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid #2a2f3a;
+      border-top-color: #4a7fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-box {
+      background: #200a0a;
+      border: 1px solid #5a1a1a;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #ff8a8a;
+      margin-top: 12px;
+    }
+    .status-msg { font-size: 13px; color: #aaa; }
+    .empty-state { color: #555; font-size: 13px; text-align: center; padding: 20px 0; }
+  </style>
+</head>
+
+<body>
+  <div class="nav"><a href="index.html">← Concept Art Gallery</a></div>
+
+  <h1>カレンダー タスク＆活動提案</h1>
+  <p class="subtitle">Googleカレンダーを分析して、今週やるべきことと活動をサジェスト</p>
+
+  <!-- 設定パネル -->
+  <div class="config-panel" id="config-panel">
+    <h2>Google OAuth 設定</h2>
+    <label>OAuth クライアントID</label>
+    <input type="text" id="client-id-input" placeholder="xxxxx.apps.googleusercontent.com">
+    <p class="hint">
+      <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a> でプロジェクトを作成し、
+      Calendar API を有効化してから OAuth 2.0 クライアントID（ウェブアプリ）を取得してください。<br>
+      承認済みのJavaScriptオリジンにこのサイトのURLを追加してください。
+    </p>
+    <button class="btn btn-primary" id="save-config-btn" onclick="saveConfig()">保存してサインイン画面へ</button>
+  </div>
+
+  <!-- サインインエリア -->
+  <div id="signin-area" style="display:none; margin-bottom: 24px;">
+    <div id="google-signin-btn"></div>
+    <div id="user-info" style="display:none;"></div>
+    <button class="btn btn-danger btn-sm" id="signout-btn" style="display:none;" onclick="signOut()">サインアウト</button>
+    <button class="btn btn-sm" style="background:#1a1f2a; color:#aaa;" onclick="resetConfig()">設定を変更</button>
+  </div>
+
+  <div id="error-area"></div>
+  <div id="loading-area"></div>
+
+  <!-- メインコンテンツ -->
+  <div id="app">
+    <div class="two-col">
+      <!-- 左列: 今週のイベント + 空き時間 -->
+      <div>
+        <div class="card" id="events-card">
+          <h3>今後7日間のイベント</h3>
+          <div id="events-content"><div class="empty-state">読み込み中…</div></div>
+        </div>
+        <div class="card" style="margin-top: 16px;" id="freetime-card">
+          <h3>空き時間の分析</h3>
+          <div id="freetime-content"><div class="empty-state">読み込み中…</div></div>
+        </div>
+      </div>
+      <!-- 右列: 提案 -->
+      <div>
+        <div class="card" id="suggestions-card">
+          <h3>タスク＆活動の提案</h3>
+          <div id="suggestions-content"><div class="empty-state">読み込み中…</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============================================================
+    // 設定管理
+    // ============================================================
+    const STORAGE_KEY = 'gcal_client_id';
+
+    function saveConfig() {
+      const val = document.getElementById('client-id-input').value.trim();
+      if (!val || !val.includes('.apps.googleusercontent.com')) {
+        showError('正しいクライアントIDを入力してください（例: xxxxx.apps.googleusercontent.com）');
+        return;
+      }
+      localStorage.setItem(STORAGE_KEY, val);
+      initApp(val);
+    }
+
+    function resetConfig() {
+      localStorage.removeItem(STORAGE_KEY);
+      location.reload();
+    }
+
+    function getClientId() {
+      return localStorage.getItem(STORAGE_KEY);
+    }
+
+    // ============================================================
+    // 認証
+    // ============================================================
+    let tokenClient = null;
+    let accessToken  = null;
+    let currentUser  = null;
+
+    function initApp(clientId) {
+      document.getElementById('config-panel').style.display = 'none';
+      document.getElementById('signin-area').style.display  = 'flex';
+
+      // Google Identity Services の初期化
+      google.accounts.id.initialize({
+        client_id: clientId,
+        callback: handleCredentialResponse,
+        auto_select: false,
+      });
+      google.accounts.id.renderButton(
+        document.getElementById('google-signin-btn'),
+        { theme: 'filled_black', size: 'medium', text: 'signin_with', locale: 'ja' }
+      );
+
+      // OAuth2 トークンクライアント（Calendarスコープ）
+      tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: clientId,
+        scope: 'https://www.googleapis.com/auth/calendar.readonly',
+        callback: handleTokenResponse,
+      });
+
+      // セッション復元
+      const savedToken = sessionStorage.getItem('gcal_token');
+      const savedUser  = sessionStorage.getItem('gcal_user');
+      if (savedToken && savedUser) {
+        accessToken = savedToken;
+        currentUser = JSON.parse(savedUser);
+        showUserInfo();
+        loadCalendar();
+      }
+    }
+
+    function handleCredentialResponse(response) {
+      // IDトークンからプロフィールをデコード（表示用のみ）
+      const payload = parseJwt(response.credential);
+      currentUser = { name: payload.name, picture: payload.picture, email: payload.email };
+      sessionStorage.setItem('gcal_user', JSON.stringify(currentUser));
+      // アクセストークンをリクエスト
+      tokenClient.requestAccessToken({ prompt: '' });
+    }
+
+    function handleTokenResponse(tokenResponse) {
+      if (tokenResponse.error) {
+        showError('認証エラー: ' + tokenResponse.error);
+        return;
+      }
+      accessToken = tokenResponse.access_token;
+      sessionStorage.setItem('gcal_token', accessToken);
+      showUserInfo();
+      loadCalendar();
+    }
+
+    function signOut() {
+      google.accounts.id.disableAutoSelect();
+      if (accessToken) {
+        google.accounts.oauth2.revoke(accessToken, () => {});
+      }
+      accessToken = null;
+      currentUser = null;
+      sessionStorage.removeItem('gcal_token');
+      sessionStorage.removeItem('gcal_user');
+      document.getElementById('user-info').style.display  = 'none';
+      document.getElementById('signout-btn').style.display = 'none';
+      document.getElementById('google-signin-btn').style.display = 'block';
+      document.getElementById('app').classList.remove('visible');
+      clearError();
+    }
+
+    function showUserInfo() {
+      if (!currentUser) return;
+      document.getElementById('google-signin-btn').style.display = 'none';
+      document.getElementById('user-info').style.display  = 'flex';
+      document.getElementById('signout-btn').style.display = 'inline-flex';
+      document.getElementById('user-info').innerHTML = `
+        <div class="user-badge">
+          <img src="${escHtml(currentUser.picture)}" alt="">
+          <span>${escHtml(currentUser.name)}</span>
+        </div>`;
+    }
+
+    // ============================================================
+    // Google Calendar API 呼び出し
+    // ============================================================
+    async function gcalFetch(url) {
+      const res = await fetch(url, {
+        headers: { Authorization: 'Bearer ' + accessToken }
+      });
+      if (res.status === 401) {
+        showError('認証が切れました。再度サインインしてください。');
+        signOut();
+        throw new Error('Unauthorized');
+      }
+      if (!res.ok) throw new Error('API error ' + res.status);
+      return res.json();
+    }
+
+    async function loadCalendar() {
+      clearError();
+      showLoading(true);
+      document.getElementById('app').classList.add('visible');
+
+      try {
+        const now    = new Date();
+        const end    = new Date(now);
+        end.setDate(end.getDate() + 7);
+
+        const params = new URLSearchParams({
+          calendarId:   'primary',
+          timeMin:      now.toISOString(),
+          timeMax:      end.toISOString(),
+          singleEvents: 'true',
+          orderBy:      'startTime',
+          maxResults:   '50',
+        });
+
+        const data = await gcalFetch(
+          `https://www.googleapis.com/calendar/v3/calendars/primary/events?${params}`
+        );
+
+        const events = (data.items || []).filter(e =>
+          e.status !== 'cancelled'
+        );
+
+        renderEvents(events, now, end);
+        renderFreeTime(events, now, end);
+        renderSuggestions(events, now);
+      } catch (e) {
+        if (e.message !== 'Unauthorized') {
+          showError('カレンダーの読み込みに失敗しました: ' + e.message);
+        }
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    // ============================================================
+    // イベント表示
+    // ============================================================
+    function renderEvents(events, now, end) {
+      const container = document.getElementById('events-content');
+      if (!events.length) {
+        container.innerHTML = '<div class="empty-state">この期間にイベントはありません</div>';
+        return;
+      }
+
+      // 日付ごとにグループ化
+      const byDay = {};
+      events.forEach(ev => {
+        const key = getEventDate(ev);
+        if (!byDay[key]) byDay[key] = [];
+        byDay[key].push(ev);
+      });
+
+      const DAY_JA = ['日', '月', '火', '水', '木', '金', '土'];
+      let html = '<ul class="event-list">';
+
+      Object.keys(byDay).sort().forEach(dateKey => {
+        const d    = new Date(dateKey + 'T00:00:00');
+        const dow  = DAY_JA[d.getDay()];
+        const isToday = dateKey === toDateStr(now);
+        const label  = `${dateKey.slice(5).replace('-','/')} (${dow})${isToday ? ' 🟢 今日' : ''}`;
+        html += `<li class="event-day-header">${escHtml(label)}</li>`;
+
+        byDay[dateKey].forEach(ev => {
+          const isAllDay = !!ev.start.date;
+          const timeStr  = isAllDay ? '終日' : formatTimeRange(ev.start.dateTime, ev.end.dateTime);
+          const dotClass = isAllDay ? 'allday' : (isDense(ev) ? 'busy' : '');
+          html += `
+            <li class="event-item">
+              <div class="event-dot ${dotClass}"></div>
+              <div class="event-info">
+                <div class="event-title">${escHtml(ev.summary || '(タイトルなし)')}</div>
+                <div class="event-time">${escHtml(timeStr)}</div>
+              </div>
+            </li>`;
+        });
+      });
+      html += '</ul>';
+      container.innerHTML = html;
+    }
+
+    // ============================================================
+    // 空き時間分析
+    // ============================================================
+    function renderFreeTime(events, rangeStart, rangeEnd) {
+      const container = document.getElementById('freetime-content');
+
+      // 業務時間帯（9:00〜21:00）の各日の空き率を計算
+      const DAY_JA = ['日', '月', '火', '水', '木', '金', '土'];
+      const slots  = [];
+
+      for (let d = new Date(rangeStart); d <= rangeEnd; d.setDate(d.getDate() + 1)) {
+        const dateStr    = toDateStr(d);
+        const workStart  = new Date(dateStr + 'T09:00:00');
+        const workEnd    = new Date(dateStr + 'T21:00:00');
+        const totalMins  = 12 * 60; // 720分
+
+        // この日のイベントが重なる時間を合算
+        const dayEvents = events.filter(ev => !ev.start.date && getEventDate(ev) === dateStr);
+        let busyMins = 0;
+        dayEvents.forEach(ev => {
+          const s = new Date(ev.start.dateTime);
+          const e = new Date(ev.end.dateTime);
+          const os = Math.max(s, workStart);
+          const oe = Math.min(e, workEnd);
+          if (oe > os) busyMins += (oe - os) / 60000;
+        });
+
+        const freeMins = Math.max(0, totalMins - busyMins);
+        const freePct  = Math.round(freeMins / totalMins * 100);
+        const busyPct  = 100 - freePct;
+
+        const isToday = dateStr === toDateStr(rangeStart);
+        slots.push({
+          label: `${dateStr.slice(5).replace('-','/')} (${DAY_JA[new Date(dateStr + 'T12:00:00').getDay()]})${isToday ? ' 今日' : ''}`,
+          freePct, busyPct, freeMins: Math.round(freeMins), dateStr,
+        });
+      }
+
+      let html = '<div class="free-slots">';
+      slots.forEach(s => {
+        const fillClass = s.busyPct > 70 ? 'busy' : '';
+        html += `
+          <div class="slot-row">
+            <span class="slot-label">${escHtml(s.label)}</span>
+            <div class="slot-bar-bg">
+              <div class="slot-bar-fill ${fillClass}" style="width:${s.busyPct}%"></div>
+            </div>
+            <span class="slot-pct">${s.freeMins}分空き</span>
+          </div>`;
+      });
+      html += '</div>';
+      html += '<p style="font-size:11px;color:#555;margin:8px 0 0">バー: 業務時間(9〜21時)のうち予定が入っている割合</p>';
+      container.innerHTML = html;
+    }
+
+    // ============================================================
+    // 提案ロジック
+    // ============================================================
+    function renderSuggestions(events, now) {
+      const container = document.getElementById('suggestions-content');
+      const suggestions = buildSuggestions(events, now);
+
+      if (!suggestions.length) {
+        container.innerHTML = '<div class="empty-state">提案はありません</div>';
+        return;
+      }
+
+      let html = '<ul class="suggestion-list">';
+      suggestions.forEach(s => {
+        html += `
+          <li class="suggestion-item">
+            <div class="suggestion-icon">${s.icon}</div>
+            <div class="suggestion-body">
+              <div class="suggestion-title">${escHtml(s.title)}</div>
+              <div class="suggestion-reason">${escHtml(s.reason)}</div>
+              <span class="tag tag-${s.type}">${escHtml(s.typeLabel)}</span>
+            </div>
+          </li>`;
+      });
+      html += '</ul>';
+      container.innerHTML = html;
+    }
+
+    function buildSuggestions(events, now) {
+      const suggestions = [];
+      const DAY_JA = ['日', '月', '火', '水', '木', '金', '土'];
+
+      // --- 分析データ準備 ---
+      const todayStr     = toDateStr(now);
+      const tomorrowStr  = toDateStr(addDays(now, 1));
+      const todayEvents  = events.filter(ev => getEventDate(ev) === todayStr && !ev.start.date);
+      const todayAllDay  = events.filter(ev => getEventDate(ev) === todayStr && ev.start.date);
+
+      // 今日の空き時間ブロック（9〜21時）
+      const todayFreeBlocks = getFreeBlocks(todayEvents, todayStr);
+      const longestFreeMin  = todayFreeBlocks.reduce((m, b) => Math.max(m, b.mins), 0);
+
+      // 明日の予定密度
+      const tomorrowEvents  = events.filter(ev => getEventDate(ev) === tomorrowStr);
+      const tomorrowDense   = tomorrowEvents.length >= 4;
+
+      // 今週の会議・ミーティング
+      const meetingKeywords = ['会議', 'ミーティング', 'MTG', 'meeting', '打合', 'レビュー', 'review', '面談', '1on1'];
+      const meetings = events.filter(ev =>
+        meetingKeywords.some(kw => (ev.summary || '').toLowerCase().includes(kw.toLowerCase()))
+      );
+
+      // 締め切り・納期キーワード
+      const deadlineKeywords = ['締切', '納期', 'deadline', 'due', '提出', '〆'];
+      const deadlines = events.filter(ev =>
+        deadlineKeywords.some(kw => (ev.summary || '').toLowerCase().includes(kw.toLowerCase()))
+      );
+
+      // 今日が週末かどうか
+      const todayDow   = now.getDay();
+      const isWeekend  = todayDow === 0 || todayDow === 6;
+      const isFriday   = todayDow === 5;
+      const isMondayTomorrow = new Date(tomorrowStr + 'T12:00:00').getDay() === 1;
+
+      // ============================================================
+      // 提案の生成
+      // ============================================================
+
+      // 1. 締め切り接近
+      const soonDeadlines = deadlines.filter(ev => {
+        const d = new Date(getEventDate(ev) + 'T00:00:00');
+        const diffDays = (d - now) / 86400000;
+        return diffDays >= 0 && diffDays <= 3;
+      });
+      soonDeadlines.forEach(ev => {
+        const d       = new Date(getEventDate(ev) + 'T00:00:00');
+        const diffDay = Math.ceil((d - now) / 86400000);
+        suggestions.push({
+          icon: '⚠️',
+          title: `「${ev.summary}」の準備を優先する`,
+          reason: `${diffDay}日後に締め切りがあります。今日中に進捗を確認しましょう。`,
+          type: 'task', typeLabel: 'タスク',
+        });
+      });
+
+      // 2. 明日が会議密集日 → 準備
+      const tomorrowMeetings = meetings.filter(ev => getEventDate(ev) === tomorrowStr);
+      if (tomorrowMeetings.length >= 2) {
+        suggestions.push({
+          icon: '📋',
+          title: '明日の会議のアジェンダを準備する',
+          reason: `明日 ${tomorrowMeetings.length} 件の会議があります。事前に資料と議題を整理しておくと円滑に進みます。`,
+          type: 'prep', typeLabel: '準備',
+        });
+      }
+
+      // 3. 今日の空き時間が長い → 集中作業
+      if (longestFreeMin >= 120) {
+        suggestions.push({
+          icon: '🎯',
+          title: `${Math.round(longestFreeMin / 60 * 10) / 10}時間の集中作業タイムに入る`,
+          reason: `今日は${longestFreeMin}分の連続した空き時間があります。深い作業・創作・学習に最適です。`,
+          type: 'task', typeLabel: 'タスク',
+        });
+      }
+
+      // 4. 今日イベントが少ない → レビュー・整理
+      if (todayEvents.length === 0 && !isWeekend) {
+        suggestions.push({
+          icon: '🗂️',
+          title: '今週のタスクを棚卸しする',
+          reason: '今日は予定が入っていません。ToDoリストや進行中プロジェクトを見直す絶好の機会です。',
+          type: 'task', typeLabel: 'タスク',
+        });
+      }
+
+      // 5. 終日イベント（オフ・休日）→ リフレッシュ提案
+      if (todayAllDay.length > 0) {
+        suggestions.push({
+          icon: '🌿',
+          title: '意識的にリフレッシュする時間を作る',
+          reason: `今日は終日予定「${todayAllDay[0].summary}」があります。切り替えを大切に。`,
+          type: 'rest', typeLabel: '休息',
+        });
+      }
+
+      // 6. 週末 → 運動・趣味
+      if (isWeekend) {
+        suggestions.push({
+          icon: '🏃',
+          title: '運動・散歩・趣味の時間を30分確保する',
+          reason: '週末は身体を動かしてリセットすると、来週のパフォーマンスが上がります。',
+          type: 'activity', typeLabel: '活動',
+        });
+        suggestions.push({
+          icon: '🎨',
+          title: '創作・学習など好きなことに時間を使う',
+          reason: '平日できなかった読書・制作・スキルアップに取り組みましょう。',
+          type: 'activity', typeLabel: '活動',
+        });
+      }
+
+      // 7. 金曜日 → 週次レビュー
+      if (isFriday) {
+        suggestions.push({
+          icon: '📊',
+          title: '週次レビューをする（今週の振り返り）',
+          reason: '今週完了したこと・来週に持ち越すことを整理しておくと月曜がスムーズです。',
+          type: 'task', typeLabel: 'タスク',
+        });
+      }
+
+      // 8. 月曜日が翌日 → 週次計画
+      if (isMondayTomorrow) {
+        suggestions.push({
+          icon: '🗓️',
+          title: '来週の目標・タスクを3つ決める',
+          reason: '週末のうちに来週の優先事項を決めておくと、月曜日をスムーズにスタートできます。',
+          type: 'task', typeLabel: 'タスク',
+        });
+      }
+
+      // 9. 今日の予定が多い → 休憩確保
+      if (todayEvents.length >= 5) {
+        suggestions.push({
+          icon: '☕',
+          title: '予定の合間に15分の休憩を意識的に入れる',
+          reason: `今日は${todayEvents.length}件の予定があります。集中力を維持するために短い休息が効果的です。`,
+          type: 'rest', typeLabel: '休息',
+        });
+      }
+
+      // 10. 今日の空き時間が短め → 夜の時間活用
+      if (longestFreeMin < 60 && todayEvents.length > 0) {
+        suggestions.push({
+          icon: '🌙',
+          title: '夜の時間を使って翌日の準備をする',
+          reason: '今日は予定が詰まっています。夜に15〜30分だけ翌日のタスクリストを確認しましょう。',
+          type: 'prep', typeLabel: '準備',
+        });
+      }
+
+      // 11. 運動・健康（週全体でイベント多い場合）
+      const weekEventCount = events.filter(ev => !ev.start.date).length;
+      if (weekEventCount >= 10) {
+        suggestions.push({
+          icon: '💪',
+          title: '今週は予定が多め。短い運動を毎日5〜10分入れる',
+          reason: '多忙な週こそ、短いストレッチや散歩でストレスを発散させましょう。',
+          type: 'activity', typeLabel: '活動',
+        });
+      }
+
+      // 提案は最大8件
+      return suggestions.slice(0, 8);
+    }
+
+    // ============================================================
+    // ユーティリティ
+    // ============================================================
+    function toDateStr(d) {
+      return d.toISOString().slice(0, 10);
+    }
+
+    function addDays(d, n) {
+      const r = new Date(d);
+      r.setDate(r.getDate() + n);
+      return r;
+    }
+
+    function getEventDate(ev) {
+      return (ev.start.date || ev.start.dateTime || '').slice(0, 10);
+    }
+
+    function formatTimeRange(startISO, endISO) {
+      const fmt = iso => {
+        const d = new Date(iso);
+        return `${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+      };
+      return `${fmt(startISO)} 〜 ${fmt(endISO)}`;
+    }
+
+    function isDense(ev) {
+      if (!ev.start.dateTime || !ev.end.dateTime) return false;
+      const mins = (new Date(ev.end.dateTime) - new Date(ev.start.dateTime)) / 60000;
+      return mins >= 60;
+    }
+
+    function getFreeBlocks(dayEvents, dateStr) {
+      const workStart = new Date(dateStr + 'T09:00:00').getTime();
+      const workEnd   = new Date(dateStr + 'T21:00:00').getTime();
+      const sorted    = dayEvents
+        .filter(ev => ev.start.dateTime)
+        .map(ev => ({ s: new Date(ev.start.dateTime).getTime(), e: new Date(ev.end.dateTime).getTime() }))
+        .sort((a, b) => a.s - b.s);
+
+      const blocks = [];
+      let cursor    = workStart;
+
+      sorted.forEach(ev => {
+        const evStart = Math.max(ev.s, workStart);
+        const evEnd   = Math.min(ev.e, workEnd);
+        if (evStart > cursor) {
+          blocks.push({ start: cursor, end: evStart, mins: Math.round((evStart - cursor) / 60000) });
+        }
+        cursor = Math.max(cursor, evEnd);
+      });
+
+      if (cursor < workEnd) {
+        blocks.push({ start: cursor, end: workEnd, mins: Math.round((workEnd - cursor) / 60000) });
+      }
+      return blocks;
+    }
+
+    function parseJwt(token) {
+      const base64 = token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+      return JSON.parse(atob(base64));
+    }
+
+    function escHtml(str) {
+      return String(str)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;');
+    }
+
+    function showError(msg) {
+      document.getElementById('error-area').innerHTML =
+        `<div class="error-box">${escHtml(msg)}</div>`;
+    }
+
+    function clearError() {
+      document.getElementById('error-area').innerHTML = '';
+    }
+
+    function showLoading(show) {
+      document.getElementById('loading-area').innerHTML = show
+        ? '<div class="status-msg" style="margin-bottom:16px;"><span class="spinner"></span> カレンダーを読み込み中…</div>'
+        : '';
+    }
+
+    // ============================================================
+    // 起動
+    // ============================================================
+    window.addEventListener('load', () => {
+      const saved = getClientId();
+      if (saved) {
+        document.getElementById('config-panel').style.display = 'none';
+        document.getElementById('signin-area').style.display  = 'flex';
+        // GIS スクリプト読み込み待ち
+        const waitForGis = setInterval(() => {
+          if (window.google && google.accounts) {
+            clearInterval(waitForGis);
+            initApp(saved);
+          }
+        }, 100);
+      }
+    });
+  </script>
+</body>
+</html>
