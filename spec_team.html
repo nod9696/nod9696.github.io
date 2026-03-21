@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ゲーム仕様書作成チーム</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0d0e14;
+      color: #e8e8f0;
+      font-family: -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif;
+      min-height: 100vh;
+      padding: 24px 16px 60px;
+    }
+
+    h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 28px;
+    }
+
+    /* ── APIキー ── */
+    label {
+      display: block;
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 6px;
+      letter-spacing: 0.03em;
+    }
+
+    input, textarea {
+      width: 100%;
+      background: #1a1b24;
+      border: 1px solid #2e2f3e;
+      border-radius: 10px;
+      color: #e8e8f0;
+      font-size: 15px;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+
+    input:focus, textarea:focus { border-color: #ff8c42; }
+
+    input[type="password"] {
+      font-family: monospace;
+      letter-spacing: 0.1em;
+    }
+
+    .field { margin-bottom: 16px; }
+
+    .key-row { display: flex; gap: 8px; align-items: flex-end; }
+    .key-row input { flex: 1; }
+
+    .btn-save {
+      background: #2e2f3e;
+      border: none;
+      border-radius: 10px;
+      color: #aaa;
+      font-size: 13px;
+      padding: 12px 14px;
+      cursor: pointer;
+      white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-save:active { background: #3a3b50; }
+
+    /* ── インタビュー ── */
+    .interview-section { margin-top: 24px; }
+
+    .step-indicator {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #2e2f3e;
+      transition: background 0.3s;
+    }
+
+    .step-dot.active { background: #ff8c42; }
+    .step-dot.done   { background: #3a8; }
+
+    .question-card {
+      background: #141520;
+      border: 1px solid #2e2f3e;
+      border-radius: 14px;
+      padding: 18px 16px;
+      margin-bottom: 16px;
+    }
+
+    .question-number {
+      font-size: 11px;
+      color: #ff8c42;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+
+    .question-text {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+      line-height: 1.5;
+    }
+
+    .question-hint {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    .question-card textarea {
+      min-height: 100px;
+      resize: vertical;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    /* 回答済みカード */
+    .answer-card {
+      background: #141520;
+      border: 1px solid #3a8833;
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+    }
+
+    .answer-label {
+      font-size: 11px;
+      color: #3a8;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .answer-text {
+      font-size: 13px;
+      color: #bbc;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    /* ── ボタン ── */
+    .btn-next {
+      width: 100%;
+      background: linear-gradient(135deg, #ff8c42, #ff5f5f);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 15px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: opacity 0.2s;
+    }
+
+    .btn-next:disabled { opacity: 0.35; }
+    .btn-next:active:not(:disabled) { opacity: 0.82; }
+
+    .btn-run {
+      width: 100%;
+      background: linear-gradient(135deg, #6c7aff, #a06cff);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 15px;
+      cursor: pointer;
+      margin-top: 8px;
+      -webkit-tap-highlight-color: transparent;
+      transition: opacity 0.2s;
+    }
+
+    .btn-run:disabled { opacity: 0.35; }
+    .btn-run:active:not(:disabled) { opacity: 0.82; }
+
+    /* ── エージェント進捗 ── */
+    .agents {
+      display: flex;
+      gap: 6px;
+      margin: 24px 0 20px;
+      flex-wrap: wrap;
+    }
+
+    .agent-chip {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid #2e2f3e;
+      color: #555;
+      transition: all 0.3s;
+    }
+
+    .agent-chip.active { border-color: #ff8c42; color: #ff8c42; background: #ff8c4218; }
+    .agent-chip.done   { border-color: #3a8;    color: #3a8;    background: #3a88331a; }
+
+    /* ── 出力エリア ── */
+    .output-section { display: none; }
+    .output-section.visible { display: block; }
+
+    .agent-block {
+      margin-bottom: 20px;
+      border: 1px solid #2e2f3e;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .agent-block.active { border-color: #ff8c4255; }
+    .agent-block.done   { border-color: #3a883344; }
+
+    .agent-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: #141520;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .agent-icon { font-size: 16px; }
+    .agent-name { flex: 1; }
+    .agent-status { font-size: 11px; color: #555; }
+    .agent-status.working { color: #ff8c42; }
+    .agent-status.done    { color: #3a8; }
+
+    .agent-content {
+      padding: 14px;
+      font-size: 14px;
+      line-height: 1.85;
+      color: #ccd;
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 40px;
+    }
+
+    /* 最終仕様書ブロック */
+    .final-block .agent-header {
+      background: #161228;
+      border-bottom: 1px solid #3e2f5e;
+    }
+
+    .final-block { border-color: #6a3aff55; }
+    .final-block.done { border-color: #a06cff88; }
+
+    .final-block .agent-content {
+      font-size: 14px;
+      line-height: 2;
+      color: #e8e8f8;
+    }
+
+    /* アクション */
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .actions button {
+      flex: 1;
+      background: #1a1b24;
+      border: 1px solid #2e2f3e;
+      border-radius: 10px;
+      color: #aaa;
+      font-size: 14px;
+      padding: 12px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .actions button:active { background: #252636; }
+
+    /* カーソル */
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: #ff8c42;
+      vertical-align: text-bottom;
+      animation: blink 0.7s step-end infinite;
+    }
+
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .error-msg {
+      background: #2a1518;
+      border: 1px solid #aa3344;
+      border-radius: 10px;
+      color: #ff8090;
+      font-size: 13px;
+      padding: 12px 14px;
+      margin-top: 16px;
+      display: none;
+    }
+
+    .error-msg.visible { display: block; }
+  </style>
+</head>
+
+<body>
+
+  <h1>📋 ゲーム仕様書作成チーム</h1>
+  <p class="subtitle">インタビューに答えるだけで、AIチームが仕様書を作成します</p>
+
+  <!-- APIキー -->
+  <div class="field">
+    <label>Anthropic API Key</label>
+    <div class="key-row">
+      <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off">
+      <button class="btn-save" onclick="saveKey()">保存</button>
+    </div>
+  </div>
+
+  <!-- インタビューセクション -->
+  <div class="interview-section" id="interviewSection">
+
+    <!-- ステップインジケーター -->
+    <div class="step-indicator">
+      <div class="step-dot active" id="dot-0"></div>
+      <div class="step-dot" id="dot-1"></div>
+      <div class="step-dot" id="dot-2"></div>
+    </div>
+
+    <!-- 回答済みカードが入る -->
+    <div id="answeredCards"></div>
+
+    <!-- 現在の質問カード -->
+    <div class="question-card" id="questionCard">
+      <div class="question-number" id="questionNumber">STEP 1 / 3</div>
+      <div class="question-text" id="questionText"></div>
+      <div class="question-hint" id="questionHint"></div>
+      <textarea id="answerInput" placeholder=""></textarea>
+    </div>
+
+    <button class="btn-next" id="nextBtn" onclick="nextStep()">次へ →</button>
+
+  </div>
+
+  <div class="error-msg" id="errorMsg"></div>
+
+  <!-- エージェント進捗チップ -->
+  <div class="agents" id="agentChips" style="display:none">
+    <span class="agent-chip" id="chip-0">🎮 GD-A</span>
+    <span class="agent-chip" id="chip-1">🔍 GD-B</span>
+    <span class="agent-chip" id="chip-2">⚙️ 機能要件</span>
+    <span class="agent-chip" id="chip-3">🔒 非機能要件</span>
+    <span class="agent-chip" id="chip-4">📄 最終統合</span>
+  </div>
+
+  <!-- 出力エリア -->
+  <div class="output-section" id="outputSection">
+
+    <div class="agent-block" id="block-0">
+      <div class="agent-header">
+        <span class="agent-icon">🎮</span>
+        <span class="agent-name">ゲームデザイナーA — 体験設計・骨格構築</span>
+        <span class="agent-status" id="status-0">待機中</span>
+      </div>
+      <div class="agent-content" id="content-0"></div>
+    </div>
+
+    <div class="agent-block" id="block-1">
+      <div class="agent-header">
+        <span class="agent-icon">🔍</span>
+        <span class="agent-name">ゲームデザイナーB — レビュー・穴の補完</span>
+        <span class="agent-status" id="status-1">待機中</span>
+      </div>
+      <div class="agent-content" id="content-1"></div>
+    </div>
+
+    <div class="agent-block" id="block-2">
+      <div class="agent-header">
+        <span class="agent-icon">⚙️</span>
+        <span class="agent-name">エンジニア — 機能要件</span>
+        <span class="agent-status" id="status-2">待機中</span>
+      </div>
+      <div class="agent-content" id="content-2"></div>
+    </div>
+
+    <div class="agent-block" id="block-3">
+      <div class="agent-header">
+        <span class="agent-icon">🔒</span>
+        <span class="agent-name">エンジニア — 非機能要件</span>
+        <span class="agent-status" id="status-3">待機中</span>
+      </div>
+      <div class="agent-content" id="content-3"></div>
+    </div>
+
+    <div class="agent-block final-block" id="block-4">
+      <div class="agent-header">
+        <span class="agent-icon">📄</span>
+        <span class="agent-name">テクニカルライター — 最終仕様書</span>
+        <span class="agent-status" id="status-4">待機中</span>
+      </div>
+      <div class="agent-content" id="content-4"></div>
+    </div>
+
+    <div class="actions" id="actionBtns" style="display:none">
+      <button onclick="copySpec()">📋 コピー</button>
+      <button onclick="downloadSpec()">⬇️ 保存</button>
+    </div>
+
+  </div>
+
+<script>
+const MODEL = "claude-opus-4-6";
+const API_URL = "https://api.anthropic.com/v1/messages";
+
+// ── インタビュー定義 ──
+const QUESTIONS = [
+  {
+    number: "STEP 1 / 3",
+    text: "このシステムが担保すべき「体験」を教えてください",
+    hint: "プレイヤーが感じるべき感情・没入感・達成感など。「〇〇な気持ちになってほしい」「〇〇な瞬間を作りたい」という形で自由に。",
+    placeholder: "例: プレイヤーが初めてボスを倒したときに「自分の力で乗り越えた」という達成感を得てほしい。また、探索中は常に「次の角に何かある」というワクワク感を維持したい。",
+  },
+  {
+    number: "STEP 2 / 3",
+    text: "必要だと思う「機能」を教えてください",
+    hint: "思いつくままで構いません。画面・ボタン・データ・フロー・連携など。箇条書きでもOKです。",
+    placeholder: "例:\n・キャラクターの移動とジャンプ\n・HPとスタミナのゲージ表示\n・セーブ・ロード機能\n・マップ探索とファストトラベル\n・アイテム合成システム",
+  },
+  {
+    number: "STEP 3 / 3",
+    text: "「アンチビジョン」を教えてください",
+    hint: "このシステムが絶対にやってはいけないこと、なってはいけない姿。制約・禁止事項・避けたいUXなど。",
+    placeholder: "例:\n・プレイヤーをストレスで強制離脱させるような理不尽な死\n・課金しないと詰まる設計\n・操作が複雑すぎてチュートリアルだけで疲れる体験\n・オンライン必須にしない",
+  },
+];
+
+let currentStep = 0;
+const answers = ["", "", ""];
+
+// ── APIキー ──
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('anthropic_api_key');
+  if (saved) document.getElementById('apiKey').value = saved;
+  renderQuestion(0);
+});
+
+function saveKey() {
+  const key = document.getElementById('apiKey').value.trim();
+  if (key) {
+    localStorage.setItem('anthropic_api_key', key);
+    const btn = document.querySelector('.btn-save');
+    btn.textContent = '✓ 保存';
+    setTimeout(() => btn.textContent = '保存', 1500);
+  }
+}
+
+// ── インタビュー ──
+function renderQuestion(step) {
+  const q = QUESTIONS[step];
+  document.getElementById('questionNumber').textContent = q.number;
+  document.getElementById('questionText').textContent = q.text;
+  document.getElementById('questionHint').textContent = q.hint;
+  const ta = document.getElementById('answerInput');
+  ta.placeholder = q.placeholder;
+  ta.value = answers[step] || '';
+
+  // ドット更新
+  for (let i = 0; i < 3; i++) {
+    const dot = document.getElementById(`dot-${i}`);
+    dot.className = 'step-dot' + (i < step ? ' done' : i === step ? ' active' : '');
+  }
+
+  // 次へボタンラベル
+  const btn = document.getElementById('nextBtn');
+  btn.textContent = step < 2 ? '次へ →' : '✦ 仕様書を生成する';
+}
+
+function renderAnsweredCard(step) {
+  const labels = ["体験", "必要な機能", "アンチビジョン"];
+  const card = document.createElement('div');
+  card.className = 'answer-card';
+  card.innerHTML = `<div class="answer-label">✓ ${labels[step]}</div><div class="answer-text">${escHtml(answers[step])}</div>`;
+  document.getElementById('answeredCards').appendChild(card);
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function nextStep() {
+  const val = document.getElementById('answerInput').value.trim();
+  if (!val) {
+    flash('答えを入力してください');
+    return;
+  }
+  answers[currentStep] = val;
+  renderAnsweredCard(currentStep);
+
+  if (currentStep < 2) {
+    currentStep++;
+    renderQuestion(currentStep);
+    document.getElementById('answerInput').value = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    // 生成フェーズへ
+    runTeam();
+  }
+}
+
+// ── エラー表示 ──
+function flash(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = msg;
+  el.classList.add('visible');
+  setTimeout(() => el.classList.remove('visible'), 3000);
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = msg;
+  el.classList.add('visible');
+}
+
+function hideError() {
+  document.getElementById('errorMsg').classList.remove('visible');
+}
+
+// ── ストリーミング ──
+async function streamMessage(apiKey, systemPrompt, userMessage, contentEl, statusEl, chipEl) {
+  statusEl.textContent = '作業中...';
+  statusEl.className = 'agent-status working';
+  chipEl.className = 'agent-chip active';
+
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor';
+  contentEl.appendChild(cursor);
+
+  const body = {
+    model: MODEL,
+    max_tokens: 6000,
+    stream: true,
+    thinking: { type: "enabled", budget_tokens: 3000 },
+    system: systemPrompt,
+    messages: [{ role: "user", content: userMessage }],
+  };
+
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+      "anthropic-beta": "interleaved-thinking-2025-05-14",
+      "anthropic-dangerous-direct-browser-access": "true",
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message || `HTTP ${res.status}`);
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let fullText = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop();
+
+    for (const line of lines) {
+      if (!line.startsWith('data: ')) continue;
+      const data = line.slice(6).trim();
+      if (data === '[DONE]') continue;
+      try {
+        const evt = JSON.parse(data);
+        if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
+          fullText += evt.delta.text;
+          contentEl.insertBefore(document.createTextNode(evt.delta.text), cursor);
+          contentEl.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+      } catch {}
+    }
+  }
+
+  cursor.remove();
+  statusEl.textContent = '完了';
+  statusEl.className = 'agent-status done';
+  chipEl.className = 'agent-chip done';
+
+  return fullText;
+}
+
+// ── メインパイプライン ──
+async function runTeam() {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  if (!apiKey) { showError('APIキーを入力してください'); return; }
+
+  hideError();
+
+  const [experience, features, antivision] = answers;
+
+  // UI切り替え
+  document.getElementById('interviewSection').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'none';
+  document.getElementById('agentChips').style.display = 'flex';
+  document.getElementById('outputSection').classList.add('visible');
+  document.getElementById('actionBtns').style.display = 'none';
+
+  // 初期化
+  for (let i = 0; i < 5; i++) {
+    document.getElementById(`content-${i}`).textContent = '';
+    document.getElementById(`status-${i}`).textContent = '待機中';
+    document.getElementById(`status-${i}`).className = 'agent-status';
+    document.getElementById(`block-${i}`).className = i === 4 ? 'agent-block final-block' : 'agent-block';
+    document.getElementById(`chip-${i}`).className = 'agent-chip';
+  }
+
+  const g = id => document.getElementById(id);
+
+  const inputSummary = `【担保すべき体験】\n${experience}\n\n【必要な機能】\n${features}\n\n【アンチビジョン】\n${antivision}`;
+
+  try {
+
+    // ── Agent 1: ゲームデザイナーA ──
+    g('block-0').classList.add('active');
+    const gdA = await streamMessage(
+      apiKey,
+      `あなたはプロのゲームデザイナーです。プレイヤー体験を中心に据えた仕様書の骨格を構築することが専門です。
+ユーザーの入力から「体験設計」「ゲームループ」「コアメカニクス」「システム間の関係」を明確化してください。
+抽象的な体験目標を、具体的なゲームシステムの設計要素へと落とし込んでください。`,
+      `以下のゲーム企画情報をもとに、仕様書の骨格を設計してください。\n\n${inputSummary}\n\n以下の観点で整理してください：\n1. コア体験の定義（どんな感情・状態をいつ・なぜ作るか）\n2. ゲームループ設計（短期・中期・長期ループ）\n3. コアメカニクス一覧と優先順位\n4. システム間の依存関係・連携の概要\n5. 設計上の重要な判断と根拠`,
+      g('content-0'), g('status-0'), g('chip-0')
+    );
+    g('block-0').classList.remove('active');
+    g('block-0').classList.add('done');
+
+    // ── Agent 2: ゲームデザイナーB ──
+    g('block-1').classList.add('active');
+    const gdB = await streamMessage(
+      apiKey,
+      `あなたはベテランのゲームデザイナーです。他のデザイナーの案を批評的に読み、抜け漏れ・矛盾・リスクを発見することが得意です。
+建設的なフィードバックを行い、仕様をより堅牢にする補完案を提示してください。`,
+      `ゲームデザイナーAが以下の骨格案を作成しました。\n\n${gdA}\n\n元のユーザー入力：\n${inputSummary}\n\n以下の観点でレビューと補完を行ってください：\n1. 体験目標とメカニクスに乖離はないか\n2. アンチビジョンに抵触するリスクはあるか\n3. 見落とされているゲームシステムや考慮事項\n4. エッジケース・コーナーケース（異常系・極端なプレイスタイル等）\n5. 補完・修正の具体案`,
+      g('content-1'), g('status-1'), g('chip-1')
+    );
+    g('block-1').classList.remove('active');
+    g('block-1').classList.add('done');
+
+    // ── Agent 3: エンジニア（機能要件） ──
+    g('block-2').classList.add('active');
+    const funcReq = await streamMessage(
+      apiKey,
+      `あなたはゲーム開発経験豊富なソフトウェアエンジニアです。ゲームデザイン仕様を「機能要件」として明文化することが専門です。
+機能要件とは「システムが何をするか」を定義するものです。ユーザーストーリー・入出力・状態遷移・データ仕様の観点で整理してください。`,
+      `以下のゲームデザイン案をもとに、機能要件を整理してください。\n\n【GD-Aの骨格案】\n${gdA}\n\n【GD-Bのレビュー・補完】\n${gdB}\n\n【元のユーザー入力】\n${inputSummary}\n\n以下の形式で機能要件を列挙してください：\n\n■ 各機能について：\n- 機能ID（例：F-001）\n- 機能名\n- 概要\n- ユーザーストーリー（〜として、〜したい、なぜなら〜）\n- 入力・トリガー\n- 処理・ロジックの概要\n- 出力・結果\n- 関連する機能ID\n- 優先度（Must/Should/Could）`,
+      g('content-2'), g('status-2'), g('chip-2')
+    );
+    g('block-2').classList.remove('active');
+    g('block-2').classList.add('done');
+
+    // ── Agent 4: エンジニア（非機能要件） ──
+    g('block-3').classList.add('active');
+    const nfReq = await streamMessage(
+      apiKey,
+      `あなたはゲーム開発経験豊富なソフトウェアエンジニアです。「非機能要件」の設計と定義が専門です。
+非機能要件とは「システムがどのように機能するか」の品質特性です。パフォーマンス・可用性・セキュリティ・拡張性・保守性・UXの品質基準を定義してください。`,
+      `以下のゲームデザイン案と機能要件をもとに、非機能要件を定義してください。\n\n【元のユーザー入力】\n${inputSummary}\n\n【機能要件の概要】\n${funcReq.substring(0, 2000)}...\n\n以下のカテゴリで非機能要件を定義してください：\n\n1. パフォーマンス要件（フレームレート・レスポンスタイム・ロード時間等）\n2. 可用性・信頼性（セーブの安全性・クラッシュ耐性・リカバリ等）\n3. スケーラビリティ（プレイヤー数・データ量・コンテンツ追加への対応）\n4. セキュリティ・不正対策（チート対策・データ保護等）\n5. 保守性・拡張性（コード設計方針・テスト要件等）\n6. UX品質基準（操作レスポンス・フィードバック・アクセシビリティ等）\n\n各項目に測定可能な基準値や合否判定基準を付けてください。`,
+      g('content-3'), g('status-3'), g('chip-3')
+    );
+    g('block-3').classList.remove('active');
+    g('block-3').classList.add('done');
+
+    // ── Agent 5: テクニカルライター（最終統合） ──
+    g('block-4').classList.add('active');
+    await streamMessage(
+      apiKey,
+      `あなたはゲーム業界のベテランテクニカルライターです。複数の専門家の成果物を、開発チームがそのまま使える統合仕様書としてまとめることが専門です。
+構成の一貫性・用語の統一・抜け漏れのない網羅性を保ちながら、読みやすく実用的なドキュメントを作成してください。`,
+      `以下の全エージェントの成果物を統合して、完成したゲームシステム仕様書を作成してください。\n\n【元のユーザー入力】\n${inputSummary}\n\n【GD-A: 体験設計・骨格】\n${gdA}\n\n【GD-B: レビュー・補完】\n${gdB}\n\n【機能要件】\n${funcReq}\n\n【非機能要件】\n${nfReq}\n\n以下の構成で、Markdownフォーマットの仕様書を作成してください：\n\n# ゲームシステム仕様書\n\n## 1. 概要・目的\n## 2. 担保すべきプレイヤー体験\n## 3. ゲームループ設計\n## 4. コアメカニクス仕様\n## 5. 機能要件一覧\n## 6. 非機能要件\n## 7. アンチビジョン・制約事項\n## 8. 未解決事項・今後の検討課題`,
+      g('content-4'), g('status-4'), g('chip-4')
+    );
+    g('block-4').classList.remove('active');
+    g('block-4').classList.add('done');
+
+    g('actionBtns').style.display = 'flex';
+
+  } catch (err) {
+    showError('エラー: ' + err.message);
+  }
+}
+
+// ── ユーティリティ ──
+function copySpec() {
+  const text = document.getElementById('content-4').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.actions button');
+    btn.textContent = '✓ コピー完了';
+    setTimeout(() => btn.textContent = '📋 コピー', 2000);
+  });
+}
+
+function downloadSpec() {
+  const text = document.getElementById('content-4').textContent;
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `game_spec_${Date.now()}.md`;
+  a.click();
+}
+</script>
+
+</body>
+</html>
