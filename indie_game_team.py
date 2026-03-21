@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-インディーゲーム記事チーム - Claude APIを使ったマルチエージェント記事執筆システム
+インディーゲーム原石発掘チーム - Claude APIを使ったマルチエージェント発掘記事システム
 
-個人制作（ソロ開発）インディーゲームに特化した記事を5つのエージェントが協力して執筆:
-1. トレンド調査員   - Steam/itch.io/SNSでの話題・トレンドをリサーチ
-2. ゲーム分析家     - メカニクス・アート・ストーリー・サウンドを多角分析
-3. 開発者取材班     - 開発者バックグラウンド・開発ストーリー・ツールを調査
-4. 読者体験ライター - プレイヤー感情・コミュニティ反響・ターゲット層を言語化
-5. 記事編集長       - 全素材を統合し完成記事（2000〜3000字）に仕上げる
+個人制作（ソロ開発）の埋もれたインディーゲームを発掘し、記事にまとめる5エージェント:
+1. 原石ハンター     - 知名度が低くても価値ある作品を嗅ぎ分けて候補を選定
+2. 鑑定士           - 原石の本質的な価値・独自性・ポテンシャルを鑑定
+3. 開発者探偵       - 制作者の背景・動機・制作環境・込めた想いを掘り起こす
+4. 体験証言ライター - 「発見の喜び」プレイヤー視点で体験を言語化
+5. 発掘記事編集長   - 全素材を統合し発掘レポート（2000〜3000字）に仕上げる
 """
 
 import anthropic
@@ -26,7 +26,7 @@ def call_agent(
 ) -> str:
     """エージェントを呼び出してレスポンスをストリーミングで取得する"""
     print(f"\n{'='*60}")
-    print(f"【{role}】が取材中...")
+    print(f"【{role}】が調査中...")
     print("=" * 60)
 
     if context:
@@ -50,180 +50,179 @@ def call_agent(
     return full_response
 
 
-def trend_scout_agent(topic: str) -> str:
-    """トレンド調査員エージェント"""
-    system = """あなたはインディーゲーム専門のトレンドリサーチャーです。
-個人開発者（ソロデベロッパー）が手がけたゲームに特化した調査を行います。
-Steam、itch.io、SNS（X/Twitter、Reddit、TikTok）でのバズり具合、
-ユーザーレビューの傾向、インディーコミュニティでの評判を詳しく調査します。
-「なぜ今これが注目されているのか」という背景も含めてまとめてください。"""
+def gem_hunter_agent(mission: str) -> str:
+    """原石ハンターエージェント"""
+    system = """あなたはインディーゲームの原石を発掘するハンターです。
+有名作・話題作ではなく、まだ多くの人に知られていない「埋もれた傑作」を嗅ぎ分ける嗅覚を持っています。
+itch.io のゲームジャム入賞作、Steam のレビュー数が少ないのに評価が異常に高い作品、
+個人開発者がひっそりと公開した作品などを重点的に探します。
+「なぜこれが埋もれているのか」「なぜ発掘する価値があるのか」を常に意識してください。"""
 
-    prompt = f"""以下のテーマに関する注目インディーゲームについてリサーチしてください。
+    prompt = f"""以下の条件で個人制作インディーゲームの原石を探してください。
 
-テーマ: {topic}
+ミッション: {mission}
 
-以下を含めてください:
-1. 注目されているタイトルとその概要（3〜5本）
-2. 各タイトルのSNS・コミュニティでの反響
-3. 注目を集めている理由・トレンドの背景
-4. 個人制作ならではの特徴・売り
-5. ユーザー評価の傾向"""
+以下を含めて報告:
+1. 候補タイトル（3〜4本）と各タイトルの埋もれている理由
+2. 各タイトルの第一印象・「原石感」を感じた決め手
+3. 知名度の低さ・露出の少なさについての考察
+4. 発掘価値が最も高いと判断した1本の選定理由
+5. そのゲームが輝く可能性を秘めているポイント"""
 
-    return call_agent("トレンド調査員", system, prompt)
-
-
-def game_analyst_agent(trends: str) -> str:
-    """ゲーム分析家エージェント"""
-    system = """あなたはインディーゲームの専門アナリストです。
-ゲームメカニクス、アートスタイル、ストーリーテリング、サウンドデザインなど
-多角的な視点でゲームを深く分析します。
-大手スタジオ作品と比較したインディーゲームの独自性や革新性に特に注目してください。"""
-
-    prompt = """トレンド調査員のリサーチをもとに、ピックアップされたゲームを詳細分析してください。
-
-最も注目すべきタイトル（1〜2本）を以下の観点で深掘り分析:
-1. ゲームメカニクスの特徴と革新性
-2. ビジュアル・アートスタイルの魅力
-3. ストーリー・世界観の深み
-4. サウンド・音楽の演出
-5. インディーゲームとしての独自ポジション
-6. 同ジャンルの競合作との差別化ポイント"""
-
-    return call_agent("ゲーム分析家", system, prompt, context=trends)
+    return call_agent("原石ハンター", system, prompt)
 
 
-def dev_story_agent(trends: str, analysis: str) -> str:
-    """開発者取材班エージェント"""
-    system = """あなたはインディーゲーム開発者専門のジャーナリストです。
-一人または少人数での開発の苦労や工夫、使用ツール・エンジン、開発期間、
-資金調達の方法（クラウドファンディング、Early Accessなど）、
-開発者のバックグラウンドや動機について詳しく調べます。
-「普通の人がゲームを作った」という感動的な側面を丁寧に伝えます。"""
+def appraiser_agent(candidates: str) -> str:
+    """鑑定士エージェント"""
+    system = """あなたはインディーゲームの鑑定士です。
+「原石」の本質的な価値を見抜くプロフェッショナルです。
+表面的な完成度ではなく、その作品に宿るユニークなアイデア・独自のビジョン・
+制作者の個性・他にない体験を丁寧に評価します。
+磨けば光るポテンシャルを、具体的な根拠とともに鑑定書にまとめてください。"""
 
-    prompt = """これまでの調査をもとに、ピックアップされたゲームの開発ストーリーを掘り下げてください。
+    prompt = """原石ハンターが発掘した候補をもとに、選定された作品の鑑定を行ってください。
 
-以下を含めた開発者ストーリーをまとめてください:
-1. 開発者のプロフィールとバックグラウンド
-2. 開発を始めたきっかけ・動機
-3. 使用した開発ツール・エンジン（Unity/Godot/RPGツクール等）
-4. 開発期間と一人開発ならではの苦労
-5. マーケティング・販売戦略（SNS活用など）
-6. 印象的なエピソード・名言"""
+鑑定書に含める内容:
+1. ゲームメカニクスのオリジナリティ（他作品にない独自性）
+2. ビジュアル・アートの個性（個人制作ならではの味）
+3. 世界観・テーマの深み
+4. 「大手スタジオには作れない」要素の特定
+5. 原石としての総合評価と磨けば光る理由"""
 
-    context = f"【トレンド調査】\n{trends}\n\n【ゲーム分析】\n{analysis}"
-    return call_agent("開発者取材班", system, prompt, context=context)
+    return call_agent("鑑定士", system, prompt, context=candidates)
 
 
-def player_exp_agent(trends: str, analysis: str, dev_story: str) -> str:
-    """読者体験ライターエージェント"""
-    system = """あなたはゲーム体験・ユーザー感情の専門ライターです。
-プレイヤーがゲームを通じて何を感じ、何を得るかを言語化するのが得意です。
-感情的な没入感、達成感、驚き、コミュニティでの共有体験など、
-プレイヤー視点から見たゲームの魅力を生き生きと表現します。
-読者が「このゲームを遊んでみたい！」と感じるような文章を書いてください。"""
+def dev_detective_agent(candidates: str, appraisal: str) -> str:
+    """開発者探偵エージェント"""
+    system = """あなたはインディーゲーム開発者の素顔を掘り起こす探偵です。
+一人でゲームを作るということの本質——孤独な作業、限られたリソース、
+それでも作り続ける理由——を丁寧に調査します。
+開発者がどんな人物で、何を伝えたくてこのゲームを作ったのかを
+SNS投稿・インタビュー・開発ブログの痕跡から推理・再構成してください。"""
 
-    prompt = """これまでの調査・分析をもとに、プレイヤー体験の観点からゲームの魅力を言語化してください。
+    prompt = """発掘・鑑定された作品の開発者像と制作背景を探偵として調査してください。
 
-以下を含めたプレイヤー体験レポートを作成:
-1. 実際のプレイヤーレビュー・感想の傾向
-2. 「このゲームならでは」の感動・驚きの体験
-3. どんな人に刺さるか（ターゲット層・刺さりポイント）
-4. コミュニティやSNSでの盛り上がり方
-5. プレイ前後での感情の変化"""
+調査報告書に含める内容:
+1. 開発者のプロフィール推測（職業・年齢層・バックグラウンド）
+2. このゲームを作るに至った動機・原体験
+3. 使用ツール・エンジン・制作環境
+4. 一人で作ることで生まれた制約と、それを逆手にとった工夫
+5. 開発者のゲームに込めたメッセージ・想い"""
+
+    context = f"【発掘報告】\n{candidates}\n\n【鑑定書】\n{appraisal}"
+    return call_agent("開発者探偵", system, prompt, context=context)
+
+
+def testimony_agent(candidates: str, appraisal: str, dev_story: str) -> str:
+    """体験証言ライターエージェント"""
+    system = """あなたは「埋もれたゲームを遊んだプレイヤー」の体験を言語化する証言ライターです。
+有名作のレビューとは違う、まだほとんど誰も語っていない体験の新鮮さを表現します。
+「こんなゲームが存在したのか」という発見の感動、
+「なぜみんな知らないんだろう」という不思議さ、
+小さいけれど確かに心に刺さる体験を、丁寧に言葉にしてください。"""
+
+    prompt = """発掘された原石ゲームを実際にプレイしたプレイヤーの視点で体験を証言してください。
+
+証言に含める内容:
+1. 初めて起動したときの第一印象・画面の雰囲気
+2. 「あ、これは普通じゃない」と気づいた瞬間
+3. 埋もれているからこそ感じる「発見の喜び」
+4. このゲームが刺さる人物像（具体的に）
+5. 遊び終わったあとに残る感情・余韻"""
 
     context = (
-        f"【トレンド調査】\n{trends}\n\n"
-        f"【ゲーム分析】\n{analysis}\n\n"
-        f"【開発者ストーリー】\n{dev_story}"
+        f"【発掘報告】\n{candidates}\n\n"
+        f"【鑑定書】\n{appraisal}\n\n"
+        f"【開発者調査】\n{dev_story}"
     )
-    return call_agent("読者体験ライター", system, prompt, context=context)
+    return call_agent("体験証言ライター", system, prompt, context=context)
 
 
-def editor_agent(trends: str, analysis: str, dev_story: str, player_exp: str) -> str:
-    """記事編集長エージェント - 完成記事を執筆"""
-    system = """あなたはインディーゲーム専門メディアの編集長です。
-個人制作ゲームの魅力を広く伝えることに情熱を持っています。
-チームが集めた素材を統合し、読者がゲームを遊びたくなるような
-完成度の高い記事に仕上げます。
-見出し・リード文・本文の構成を整え、インディーゲームへの愛と敬意が伝わる文章を書いてください。"""
+def editor_agent(candidates: str, appraisal: str, dev_story: str, testimony: str) -> str:
+    """発掘記事編集長エージェント - 完成発掘レポートを執筆"""
+    system = """あなたはインディーゲームの原石を世に送り出す発掘記事の編集長です。
+チームが掘り当てた原石を、まだゲームを知らない読者に伝える発掘レポートを書きます。
+「なぜこのゲームは埋もれているのか」「なぜあなたが最初の発見者になれるのか」
+という興奮と、個人開発者へのリスペクトが伝わる文章を書いてください。
+読者が記事を読み終えたあと、今すぐそのゲームを検索したくなることを目指してください。"""
 
-    prompt = """チームの全調査・分析を統合して、完成した記事を執筆してください。
+    prompt = """チームの全調査を統合して、発掘レポートを執筆してください。
 
-要件:
-- キャッチーな記事タイトル（日本語）
-- リード文（100〜150字）
+発掘レポートの要件:
+- 「原石発掘」感を前面に出したキャッチーなタイトル
+- リード文（100〜150字）：「なぜ今これを読む必要があるか」を凝縮
 - 本文（2000〜3000字）
-- 「個人制作」「ソロ開発」の偉大さを伝える
-- 開発者への敬意と読者への推薦を込める
-- 読者が読後にゲームを調べたくなる構成"""
+- 「あなたが知らないだけで、すごいゲームがある」という発見の喜びを伝える
+- 個人開発者が一人で作り上げた事実への純粋な敬意
+- 記事末尾に「このゲームを探す方法」を添える"""
 
     context = (
-        f"【トレンド調査】\n{trends}\n\n"
-        f"【ゲーム分析】\n{analysis}\n\n"
-        f"【開発者ストーリー】\n{dev_story}\n\n"
-        f"【プレイヤー体験】\n{player_exp}"
+        f"【発掘報告】\n{candidates}\n\n"
+        f"【鑑定書】\n{appraisal}\n\n"
+        f"【開発者調査】\n{dev_story}\n\n"
+        f"【プレイヤー証言】\n{testimony}"
     )
-    return call_agent("記事編集長（完成記事）", system, prompt, context=context)
+    return call_agent("発掘記事編集長（完成レポート）", system, prompt, context=context)
 
 
-def write_article(topic: str) -> str:
+def discover_gem(mission: str) -> str:
     """
-    インディーゲーム記事チームを起動してトピックから記事を生成する
+    インディーゲーム原石発掘チームを起動して発掘レポートを生成する
 
     Args:
-        topic: 記事のテーマ（例: "2025年のSteamで話題の一人開発ローグライクゲーム"）
+        mission: 発掘ミッション（例: "2024〜2026年のitch.ioの個人制作パズルゲームの原石"）
 
     Returns:
-        完成した記事のテキスト
+        完成した発掘レポートのテキスト
     """
     print("\n" + "=" * 60)
-    print("🎮  インディーゲーム記事チーム 始動")
-    print(f"テーマ: {topic}")
+    print("💎  インディーゲーム原石発掘チーム 始動")
+    print(f"ミッション: {mission}")
     print("=" * 60)
 
-    # Step 1: トレンド調査員
-    trends = trend_scout_agent(topic)
+    # Step 1: 原石ハンター
+    candidates = gem_hunter_agent(mission)
 
-    # Step 2: ゲーム分析家
-    analysis = game_analyst_agent(trends)
+    # Step 2: 鑑定士
+    appraisal = appraiser_agent(candidates)
 
-    # Step 3: 開発者取材班
-    dev_story = dev_story_agent(trends, analysis)
+    # Step 3: 開発者探偵
+    dev_story = dev_detective_agent(candidates, appraisal)
 
-    # Step 4: 読者体験ライター
-    player_exp = player_exp_agent(trends, analysis, dev_story)
+    # Step 4: 体験証言ライター
+    testimony = testimony_agent(candidates, appraisal, dev_story)
 
-    # Step 5: 記事編集長（完成記事）
-    final_article = editor_agent(trends, analysis, dev_story, player_exp)
+    # Step 5: 発掘記事編集長（完成レポート）
+    report = editor_agent(candidates, appraisal, dev_story, testimony)
 
     print("\n" + "=" * 60)
-    print("✅ 記事完成！")
+    print("✅ 発掘レポート完成！")
     print("=" * 60)
 
-    return final_article
+    return report
 
 
-def save_article(topic: str, article: str, filename: Optional[str] = None) -> str:
-    """記事をファイルに保存する"""
+def save_report(mission: str, report: str, filename: Optional[str] = None) -> str:
+    """発掘レポートをファイルに保存する"""
     if filename is None:
-        safe_topic = "".join(c for c in topic[:20] if c.isalnum() or c in "_ ")
-        safe_topic = safe_topic.strip().replace(" ", "_")
-        filename = f"indie_game_article_{safe_topic}.txt"
+        safe_mission = "".join(c for c in mission[:20] if c.isalnum() or c in "_ ")
+        safe_mission = safe_mission.strip().replace(" ", "_")
+        filename = f"gem_discovery_{safe_mission}.txt"
 
     with open(filename, "w", encoding="utf-8") as f:
-        f.write(f"テーマ: {topic}\n")
+        f.write(f"発掘ミッション: {mission}\n")
         f.write("=" * 60 + "\n\n")
-        f.write(article)
+        f.write(report)
 
-    print(f"\n📄 記事を保存しました: {filename}")
+    print(f"\n📄 発掘レポートを保存しました: {filename}")
     return filename
 
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        topic = " ".join(sys.argv[1:])
+        mission = " ".join(sys.argv[1:])
     else:
-        topic = "2025年〜2026年のSteamで話題の個人制作インディーゲーム"
+        mission = "2024〜2026年のitch.io・Steamにある個人制作インディーゲームの原石"
 
-    article = write_article(topic)
-    save_article(topic, article)
+    report = discover_gem(mission)
+    save_report(mission, report)
