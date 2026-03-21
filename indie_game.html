@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>インディーゲーム記事チーム</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0d0e14;
+      color: #e8e8f0;
+      font-family: -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif;
+      min-height: 100vh;
+      padding: 20px 16px 48px;
+    }
+
+    h1 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #fff;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 28px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 6px;
+      letter-spacing: 0.03em;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      background: #1a1b24;
+      border: 1px solid #2e2f3e;
+      border-radius: 10px;
+      color: #e8e8f0;
+      font-size: 15px;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: #6c7aff;
+    }
+
+    input[type="password"] {
+      font-family: monospace;
+      letter-spacing: 0.1em;
+    }
+
+    select {
+      cursor: pointer;
+    }
+
+    select option {
+      background: #1a1b24;
+    }
+
+    .field { margin-bottom: 16px; }
+
+    textarea {
+      min-height: 70px;
+      resize: vertical;
+      font-family: -apple-system, "Hiragino Sans", sans-serif;
+    }
+
+    .key-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+    }
+
+    .key-row input { flex: 1; }
+
+    .btn-save {
+      background: #2e2f3e;
+      border: none;
+      border-radius: 10px;
+      color: #aaa;
+      font-size: 13px;
+      padding: 12px 14px;
+      cursor: pointer;
+      white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-save:active { background: #3a3b50; }
+
+    button.run {
+      width: 100%;
+      background: linear-gradient(135deg, #ff6c8a, #ff9a3c);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 15px;
+      cursor: pointer;
+      margin-top: 8px;
+      -webkit-tap-highlight-color: transparent;
+      transition: opacity 0.2s;
+    }
+
+    button.run:disabled { opacity: 0.4; }
+    button.run:active:not(:disabled) { opacity: 0.85; }
+
+    /* エージェント進捗 */
+    .agents {
+      display: flex;
+      gap: 6px;
+      margin: 24px 0 20px;
+      flex-wrap: wrap;
+    }
+
+    .agent-chip {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid #2e2f3e;
+      color: #555;
+      transition: all 0.3s;
+    }
+
+    .agent-chip.active {
+      border-color: #ff6c8a;
+      color: #ff6c8a;
+      background: #ff6c8a18;
+    }
+
+    .agent-chip.done {
+      border-color: #3a5;
+      color: #3a5;
+      background: #3a551a18;
+    }
+
+    /* 出力エリア */
+    .output-section { display: none; }
+    .output-section.visible { display: block; }
+
+    .agent-block {
+      margin-bottom: 24px;
+      border: 1px solid #2e2f3e;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .agent-block.active { border-color: #ff6c8a55; }
+    .agent-block.done { border-color: #3a552244; }
+
+    .agent-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: #141520;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .agent-icon { font-size: 16px; }
+    .agent-name { flex: 1; }
+    .agent-status { font-size: 11px; color: #555; }
+    .agent-status.working { color: #ff6c8a; }
+    .agent-status.done { color: #3a5; }
+
+    .agent-content {
+      padding: 14px;
+      font-size: 14px;
+      line-height: 1.8;
+      color: #ccd;
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 40px;
+    }
+
+    /* 最終稿 */
+    .final-block .agent-header {
+      background: #1c1216;
+      border-bottom: 1px solid #5e2f3e;
+    }
+
+    .final-block { border-color: #ff6c8a33; }
+    .final-block.done { border-color: #ff9a3c88; }
+
+    .final-block .agent-content {
+      font-size: 15px;
+      line-height: 2;
+      color: #e8e8f8;
+    }
+
+    /* コピー・ダウンロード */
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .actions button {
+      flex: 1;
+      background: #1a1b24;
+      border: 1px solid #2e2f3e;
+      border-radius: 10px;
+      color: #aaa;
+      font-size: 14px;
+      padding: 12px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .actions button:active { background: #252636; }
+
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: #ff6c8a;
+      vertical-align: text-bottom;
+      animation: blink 0.7s step-end infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .error-msg {
+      background: #2a1518;
+      border: 1px solid #aa3344;
+      border-radius: 10px;
+      color: #ff8090;
+      font-size: 13px;
+      padding: 12px 14px;
+      margin-top: 16px;
+      display: none;
+    }
+
+    .error-msg.visible { display: block; }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>🎮 インディーゲーム記事チーム</h1>
+  <p class="subtitle">5つのAIエージェントが個人制作インディーゲームの記事を執筆します</p>
+
+  <!-- APIキー -->
+  <div class="field">
+    <label>Anthropic API Key</label>
+    <div class="key-row">
+      <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off">
+      <button class="btn-save" onclick="saveKey()">保存</button>
+    </div>
+  </div>
+
+  <!-- ゲームタイトル / キーワード -->
+  <div class="field">
+    <label>ゲームタイトル または キーワード</label>
+    <textarea id="gameTitle" placeholder="例: Stardew Valley、ローグライク系の一人開発ゲーム、pixel art RPG indie 2024など"></textarea>
+  </div>
+
+  <!-- 対象日付 / プラットフォーム -->
+  <div class="field-row">
+    <div class="field">
+      <label>対象期間・年</label>
+      <select id="period">
+        <option value="2025年〜2026年の最新">2025〜2026年（最新）</option>
+        <option value="2024年の">2024年</option>
+        <option value="2023年の">2023年</option>
+        <option value="近年注目の">近年注目</option>
+        <option value="歴史的名作">歴史的名作</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>プラットフォーム</label>
+      <select id="platform">
+        <option value="PC/Steam">PC / Steam</option>
+        <option value="Nintendo Switch">Nintendo Switch</option>
+        <option value="モバイル">モバイル</option>
+        <option value="全プラットフォーム">全プラットフォーム</option>
+        <option value="itch.io">itch.io</option>
+      </select>
+    </div>
+  </div>
+
+  <button class="run" id="runBtn" onclick="runTeam()">🎮 記事を生成する</button>
+
+  <div class="error-msg" id="errorMsg"></div>
+
+  <!-- エージェント進捗チップ -->
+  <div class="agents" id="agentChips" style="display:none">
+    <span class="agent-chip" id="chip-0">🔍 トレンド調査員</span>
+    <span class="agent-chip" id="chip-1">🕹️ ゲーム分析家</span>
+    <span class="agent-chip" id="chip-2">👨‍💻 開発者取材班</span>
+    <span class="agent-chip" id="chip-3">🎯 読者体験ライター</span>
+    <span class="agent-chip" id="chip-4">📰 記事編集長</span>
+  </div>
+
+  <!-- 出力エリア -->
+  <div class="output-section" id="outputSection">
+
+    <div class="agent-block" id="block-0">
+      <div class="agent-header">
+        <span class="agent-icon">🔍</span>
+        <span class="agent-name">トレンド調査員</span>
+        <span class="agent-status" id="status-0">待機中</span>
+      </div>
+      <div class="agent-content" id="content-0"></div>
+    </div>
+
+    <div class="agent-block" id="block-1">
+      <div class="agent-header">
+        <span class="agent-icon">🕹️</span>
+        <span class="agent-name">ゲーム分析家</span>
+        <span class="agent-status" id="status-1">待機中</span>
+      </div>
+      <div class="agent-content" id="content-1"></div>
+    </div>
+
+    <div class="agent-block" id="block-2">
+      <div class="agent-header">
+        <span class="agent-icon">👨‍💻</span>
+        <span class="agent-name">開発者取材班</span>
+        <span class="agent-status" id="status-2">待機中</span>
+      </div>
+      <div class="agent-content" id="content-2"></div>
+    </div>
+
+    <div class="agent-block" id="block-3">
+      <div class="agent-header">
+        <span class="agent-icon">🎯</span>
+        <span class="agent-name">読者体験ライター</span>
+        <span class="agent-status" id="status-3">待機中</span>
+      </div>
+      <div class="agent-content" id="content-3"></div>
+    </div>
+
+    <div class="agent-block final-block" id="block-4">
+      <div class="agent-header">
+        <span class="agent-icon">📰</span>
+        <span class="agent-name">記事編集長 — 完成記事</span>
+        <span class="agent-status" id="status-4">待機中</span>
+      </div>
+      <div class="agent-content" id="content-4"></div>
+    </div>
+
+    <div class="actions" id="actionBtns" style="display:none">
+      <button onclick="copyArticle()">📋 コピー</button>
+      <button onclick="downloadArticle()">⬇️ 保存</button>
+    </div>
+
+  </div>
+
+<script>
+const MODEL = "claude-opus-4-6";
+const API_URL = "https://api.anthropic.com/v1/messages";
+
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('anthropic_api_key');
+  if (saved) document.getElementById('apiKey').value = saved;
+});
+
+function saveKey() {
+  const key = document.getElementById('apiKey').value.trim();
+  if (key) {
+    localStorage.setItem('anthropic_api_key', key);
+    const btn = document.querySelector('.btn-save');
+    btn.textContent = '✓ 保存';
+    setTimeout(() => btn.textContent = '保存', 1500);
+  }
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = msg;
+  el.classList.add('visible');
+}
+
+function hideError() {
+  document.getElementById('errorMsg').classList.remove('visible');
+}
+
+async function streamMessage(apiKey, systemPrompt, userMessage, contentEl, statusEl, chipEl) {
+  statusEl.textContent = '取材中...';
+  statusEl.className = 'agent-status working';
+  chipEl.className = 'agent-chip active';
+
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor';
+  contentEl.appendChild(cursor);
+
+  const body = {
+    model: MODEL,
+    max_tokens: 4096,
+    stream: true,
+    thinking: { type: "enabled", budget_tokens: 2000 },
+    system: systemPrompt,
+    messages: [{ role: "user", content: userMessage }]
+  };
+
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+      "anthropic-beta": "interleaved-thinking-2025-05-14",
+      "anthropic-dangerous-direct-browser-access": "true",
+    },
+    body: JSON.stringify(body)
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message || `HTTP ${res.status}`);
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let fullText = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop();
+
+    for (const line of lines) {
+      if (!line.startsWith('data: ')) continue;
+      const data = line.slice(6).trim();
+      if (data === '[DONE]') continue;
+
+      try {
+        const evt = JSON.parse(data);
+        if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
+          fullText += evt.delta.text;
+          contentEl.insertBefore(document.createTextNode(evt.delta.text), cursor);
+          contentEl.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+      } catch {}
+    }
+  }
+
+  cursor.remove();
+  statusEl.textContent = '完了';
+  statusEl.className = 'agent-status done';
+  chipEl.className = 'agent-chip done';
+
+  return fullText;
+}
+
+async function runTeam() {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  const gameTitle = document.getElementById('gameTitle').value.trim();
+  const period = document.getElementById('period').value;
+  const platform = document.getElementById('platform').value;
+
+  hideError();
+
+  if (!apiKey) { showError('APIキーを入力してください'); return; }
+  if (!gameTitle) { showError('ゲームタイトルまたはキーワードを入力してください'); return; }
+
+  const runBtn = document.getElementById('runBtn');
+  runBtn.disabled = true;
+  runBtn.textContent = '🎮 生成中...';
+
+  document.getElementById('agentChips').style.display = 'flex';
+  document.getElementById('outputSection').classList.add('visible');
+  document.getElementById('actionBtns').style.display = 'none';
+
+  for (let i = 0; i < 5; i++) {
+    document.getElementById(`content-${i}`).textContent = '';
+    document.getElementById(`status-${i}`).textContent = '待機中';
+    document.getElementById(`status-${i}`).className = 'agent-status';
+    document.getElementById(`block-${i}`).className = i === 4 ? 'agent-block final-block' : 'agent-block';
+    document.getElementById(`chip-${i}`).className = 'agent-chip';
+  }
+
+  const g = (id) => document.getElementById(id);
+  const topic = `${period}${platform}の個人制作インディーゲーム: ${gameTitle}`;
+
+  try {
+    // ── Step 1: トレンド調査員 ──
+    g('block-0').classList.add('active');
+    const trends = await streamMessage(
+      apiKey,
+      `あなたはインディーゲーム専門のトレンドリサーチャーです。個人開発者（ソロデベロッパー）が手がけたゲームに特化した調査を行います。Steam、itch.io、SNS（X/Twitter、Reddit、TikTok）でのバズり具合、ユーザーレビューの傾向、インディーコミュニティでの評判を詳しく調査します。「なぜ今これが注目されているのか」という背景も含めてまとめてください。`,
+      `以下のテーマに関する${period}の注目インディーゲームについてリサーチしてください。\n\nテーマ: ${topic}\n\n以下を含めてください:\n1. 注目されているタイトルとその概要（3〜5本）\n2. 各タイトルのSNS・コミュニティでの反響\n3. 注目を集めている理由・トレンドの背景\n4. 個人制作ならではの特徴・売り\n5. ユーザー評価の傾向`,
+      g('content-0'), g('status-0'), g('chip-0')
+    );
+    g('block-0').classList.remove('active');
+    g('block-0').classList.add('done');
+
+    // ── Step 2: ゲーム分析家 ──
+    g('block-1').classList.add('active');
+    const analysis = await streamMessage(
+      apiKey,
+      `あなたはインディーゲームの専門アナリストです。ゲームメカニクス、アートスタイル、ストーリーテリング、サウンドデザインなど多角的な視点でゲームを深く分析します。大手スタジオ作品と比較したインディーゲームの独自性や革新性に特に注目してください。`,
+      `トレンド調査員のリサーチをもとに、ピックアップされたゲームを詳細分析してください。\n\n【トレンド調査】\n${trends}\n\n以下の観点で最も注目すべきタイトル（1〜2本）を深掘り分析:\n1. ゲームメカニクスの特徴と革新性\n2. ビジュアル・アートスタイルの魅力\n3. ストーリー・世界観の深み\n4. サウンド・音楽の演出\n5. インディーゲームとしての独自ポジション\n6. 同ジャンルの競合作との差別化ポイント`,
+      g('content-1'), g('status-1'), g('chip-1')
+    );
+    g('block-1').classList.remove('active');
+    g('block-1').classList.add('done');
+
+    // ── Step 3: 開発者取材班 ──
+    g('block-2').classList.add('active');
+    const devStory = await streamMessage(
+      apiKey,
+      `あなたはインディーゲーム開発者専門のジャーナリストです。一人または少人数での開発の苦労や工夫、使用ツール・エンジン、開発期間、資金調達の方法（クラウドファンディング、Early Accessなど）、開発者のバックグラウンドや動機について詳しく調べます。「普通の人がゲームを作った」という感動的な側面を丁寧に伝えます。`,
+      `これまでの調査をもとに、ピックアップされたゲームの開発ストーリーを掘り下げてください。\n\n【トレンド調査】\n${trends}\n\n【ゲーム分析】\n${analysis}\n\n以下を含めた開発者ストーリーをまとめてください:\n1. 開発者のプロフィールとバックグラウンド\n2. 開発を始めたきっかけ・動機\n3. 使用した開発ツール・エンジン（Unity/Godot/RPGツクール等）\n4. 開発期間と一人開発ならではの苦労\n5. マーケティング・販売戦略（SNS活用など）\n6. 印象的なエピソード・名言`,
+      g('content-2'), g('status-2'), g('chip-2')
+    );
+    g('block-2').classList.remove('active');
+    g('block-2').classList.add('done');
+
+    // ── Step 4: 読者体験ライター ──
+    g('block-3').classList.add('active');
+    const playerExp = await streamMessage(
+      apiKey,
+      `あなたはゲーム体験・ユーザー感情の専門ライターです。プレイヤーがゲームを通じて何を感じ、何を得るかを言語化するのが得意です。感情的な没入感、達成感、驚き、コミュニティでの共有体験など、プレイヤー視点から見たゲームの魅力を生き生きと表現します。読者が「このゲームを遊んでみたい！」と感じるような文章を書いてください。`,
+      `これまでの調査・分析をもとに、プレイヤー体験の観点からゲームの魅力を言語化してください。\n\n【トレンド調査】\n${trends}\n\n【ゲーム分析】\n${analysis}\n\n【開発者ストーリー】\n${devStory}\n\n以下を含めたプレイヤー体験レポートを作成:\n1. 実際のプレイヤーレビュー・感想の傾向\n2. 「このゲームならでは」の感動・驚きの体験\n3. どんな人に刺さるか（ターゲット層・刺さりポイント）\n4. コミュニティやSNSでの盛り上がり方\n5. プレイ前後での感情の変化`,
+      g('content-3'), g('status-3'), g('chip-3')
+    );
+    g('block-3').classList.remove('active');
+    g('block-3').classList.add('done');
+
+    // ── Step 5: 記事編集長（完成記事） ──
+    g('block-4').classList.add('active');
+    await streamMessage(
+      apiKey,
+      `あなたはインディーゲーム専門メディアの編集長です。個人制作ゲームの魅力を広く伝えることに情熱を持っています。チームが集めた素材を統合し、読者がゲームを遊びたくなるような完成度の高い記事に仕上げます。見出し・リード文・本文の構成を整え、インディーゲームへの愛と敬意が伝わる文章を書いてください。`,
+      `チームの全調査・分析を統合して、完成した記事を執筆してください。\n\n【トレンド調査】\n${trends}\n\n【ゲーム分析】\n${analysis}\n\n【開発者ストーリー】\n${devStory}\n\n【プレイヤー体験】\n${playerExp}\n\n要件:\n- キャッチーな記事タイトル（日本語）\n- リード文（100〜150字）\n- 本文（2000〜3000字）\n- 「個人制作」「ソロ開発」の偉大さを伝える\n- 開発者への敬意と読者への推薦を込める\n- 読者が読後にゲームを調べたくなる構成`,
+      g('content-4'), g('status-4'), g('chip-4')
+    );
+    g('block-4').classList.remove('active');
+    g('block-4').classList.add('done');
+
+    document.getElementById('actionBtns').style.display = 'flex';
+
+  } catch (err) {
+    showError('エラー: ' + err.message);
+  }
+
+  runBtn.disabled = false;
+  runBtn.textContent = '🎮 記事を生成する';
+}
+
+function copyArticle() {
+  const text = document.getElementById('content-4').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.actions button');
+    btn.textContent = '✓ コピー完了';
+    setTimeout(() => btn.textContent = '📋 コピー', 2000);
+  });
+}
+
+function downloadArticle() {
+  const gameTitle = document.getElementById('gameTitle').value.trim();
+  const text = document.getElementById('content-4').textContent;
+  const blob = new Blob([`テーマ: ${gameTitle}\n${'='.repeat(40)}\n\n${text}`], { type: 'text/plain;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `indie_game_article_${Date.now()}.txt`;
+  a.click();
+}
+</script>
+
+</body>
+</html>
