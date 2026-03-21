@@ -251,6 +251,28 @@
       color: #555;
       margin-top: 5px;
     }
+
+    .date-range {
+      display: none;
+      gap: 8px;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .date-range.visible { display: flex; }
+
+    .date-range input[type="date"] {
+      flex: 1;
+      padding: 10px 12px;
+      font-size: 14px;
+      color-scheme: dark;
+    }
+
+    .date-range span {
+      color: #555;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
   </style>
 </head>
 
@@ -279,12 +301,18 @@
   <div class="field-row">
     <div class="field">
       <label>発掘対象期間</label>
-      <select id="period">
+      <select id="period" onchange="toggleDateRange()">
         <option value="2024〜2026年にリリースされた">近作（2024〜2026年）</option>
         <option value="2020〜2023年にリリースされた">やや前（2020〜2023年）</option>
         <option value="2015〜2019年にリリースされた">往年（2015〜2019年）</option>
         <option value="年代を問わない">年代不問</option>
+        <option value="custom">📅 期間を指定…</option>
       </select>
+      <div class="date-range" id="dateRange">
+        <input type="date" id="dateFrom">
+        <span>〜</span>
+        <input type="date" id="dateTo">
+      </div>
     </div>
     <div class="field">
       <label>発掘場所</label>
@@ -374,6 +402,29 @@ window.addEventListener('load', () => {
   const saved = localStorage.getItem('anthropic_api_key');
   if (saved) document.getElementById('apiKey').value = saved;
 });
+
+function toggleDateRange() {
+  const isCustom = document.getElementById('period').value === 'custom';
+  document.getElementById('dateRange').classList.toggle('visible', isCustom);
+  if (isCustom) {
+    const today = new Date().toISOString().slice(0, 10);
+    const past = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
+    const df = document.getElementById('dateFrom');
+    const dt = document.getElementById('dateTo');
+    if (!df.value) df.value = past;
+    if (!dt.value) dt.value = today;
+  }
+}
+
+function getPeriodValue() {
+  const sel = document.getElementById('period');
+  if (sel.value !== 'custom') return sel.value;
+  const from = document.getElementById('dateFrom').value;
+  const to = document.getElementById('dateTo').value;
+  if (!from || !to) return '年代を問わない';
+  const fmt = (d) => d.replaceAll('-', '/');
+  return `${fmt(from)}〜${fmt(to)}の期間にリリースされた`;
+}
 
 function saveKey() {
   const key = document.getElementById('apiKey').value.trim();
@@ -470,7 +521,7 @@ async function streamMessage(apiKey, systemPrompt, userMessage, contentEl, statu
 async function runTeam() {
   const apiKey = document.getElementById('apiKey').value.trim();
   const hint = document.getElementById('hint').value.trim() || '特になし（チームに一任）';
-  const period = document.getElementById('period').value;
+  const period = getPeriodValue();
   const platform = document.getElementById('platform').value;
 
   hideError();
