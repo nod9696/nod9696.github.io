@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>インディーゲーム記事チーム</title>
+  <title>インディーゲーム原石発掘チーム</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: #0d0e14;
+      background: #0b0c10;
       color: #e8e8f0;
       font-family: -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif;
       min-height: 100vh;
@@ -38,8 +38,8 @@
 
     input, textarea, select {
       width: 100%;
-      background: #1a1b24;
-      border: 1px solid #2e2f3e;
+      background: #181920;
+      border: 1px solid #2a2b3a;
       border-radius: 10px;
       color: #e8e8f0;
       font-size: 15px;
@@ -50,7 +50,7 @@
     }
 
     input:focus, textarea:focus, select:focus {
-      border-color: #6c7aff;
+      border-color: #d4a030;
     }
 
     input[type="password"] {
@@ -58,13 +58,8 @@
       letter-spacing: 0.1em;
     }
 
-    select {
-      cursor: pointer;
-    }
-
-    select option {
-      background: #1a1b24;
-    }
+    select { cursor: pointer; }
+    select option { background: #181920; }
 
     .field { margin-bottom: 16px; }
 
@@ -83,7 +78,7 @@
     .key-row input { flex: 1; }
 
     .btn-save {
-      background: #2e2f3e;
+      background: #2a2b3a;
       border: none;
       border-radius: 10px;
       color: #aaa;
@@ -94,14 +89,14 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    .btn-save:active { background: #3a3b50; }
+    .btn-save:active { background: #383950; }
 
     button.run {
       width: 100%;
-      background: linear-gradient(135deg, #ff6c8a, #ff9a3c);
+      background: linear-gradient(135deg, #c8860a, #e8c040);
       border: none;
       border-radius: 12px;
-      color: #fff;
+      color: #1a1000;
       font-size: 16px;
       font-weight: 700;
       padding: 15px;
@@ -126,21 +121,21 @@
       font-size: 11px;
       padding: 4px 10px;
       border-radius: 20px;
-      border: 1px solid #2e2f3e;
+      border: 1px solid #2a2b3a;
       color: #555;
       transition: all 0.3s;
     }
 
     .agent-chip.active {
-      border-color: #ff6c8a;
-      color: #ff6c8a;
-      background: #ff6c8a18;
+      border-color: #d4a030;
+      color: #d4a030;
+      background: #d4a03018;
     }
 
     .agent-chip.done {
-      border-color: #3a5;
-      color: #3a5;
-      background: #3a551a18;
+      border-color: #3a7a4a;
+      color: #3a7a4a;
+      background: #3a7a4a18;
     }
 
     /* 出力エリア */
@@ -149,20 +144,20 @@
 
     .agent-block {
       margin-bottom: 24px;
-      border: 1px solid #2e2f3e;
+      border: 1px solid #2a2b3a;
       border-radius: 12px;
       overflow: hidden;
     }
 
-    .agent-block.active { border-color: #ff6c8a55; }
-    .agent-block.done { border-color: #3a552244; }
+    .agent-block.active { border-color: #d4a03055; }
+    .agent-block.done { border-color: #3a7a4a33; }
 
     .agent-header {
       display: flex;
       align-items: center;
       gap: 8px;
       padding: 10px 14px;
-      background: #141520;
+      background: #131420;
       font-size: 13px;
       font-weight: 600;
     }
@@ -170,8 +165,8 @@
     .agent-icon { font-size: 16px; }
     .agent-name { flex: 1; }
     .agent-status { font-size: 11px; color: #555; }
-    .agent-status.working { color: #ff6c8a; }
-    .agent-status.done { color: #3a5; }
+    .agent-status.working { color: #d4a030; }
+    .agent-status.done { color: #3a7a4a; }
 
     .agent-content {
       padding: 14px;
@@ -185,17 +180,17 @@
 
     /* 最終稿 */
     .final-block .agent-header {
-      background: #1c1216;
-      border-bottom: 1px solid #5e2f3e;
+      background: #181408;
+      border-bottom: 1px solid #5a4010;
     }
 
-    .final-block { border-color: #ff6c8a33; }
-    .final-block.done { border-color: #ff9a3c88; }
+    .final-block { border-color: #c8860a33; }
+    .final-block.done { border-color: #e8c04088; }
 
     .final-block .agent-content {
       font-size: 15px;
       line-height: 2;
-      color: #e8e8f8;
+      color: #f0e8d0;
     }
 
     /* コピー・ダウンロード */
@@ -207,8 +202,8 @@
 
     .actions button {
       flex: 1;
-      background: #1a1b24;
-      border: 1px solid #2e2f3e;
+      background: #181920;
+      border: 1px solid #2a2b3a;
       border-radius: 10px;
       color: #aaa;
       font-size: 14px;
@@ -217,13 +212,13 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    .actions button:active { background: #252636; }
+    .actions button:active { background: #222330; }
 
     .cursor {
       display: inline-block;
       width: 2px;
       height: 1em;
-      background: #ff6c8a;
+      background: #d4a030;
       vertical-align: text-bottom;
       animation: blink 0.7s step-end infinite;
     }
@@ -250,13 +245,19 @@
       grid-template-columns: 1fr 1fr;
       gap: 12px;
     }
+
+    .hint-note {
+      font-size: 11px;
+      color: #555;
+      margin-top: 5px;
+    }
   </style>
 </head>
 
 <body>
 
-  <h1>🎮 インディーゲーム記事チーム</h1>
-  <p class="subtitle">5つのAIエージェントが個人制作インディーゲームの記事を執筆します</p>
+  <h1>💎 インディーゲーム原石発掘チーム</h1>
+  <p class="subtitle">5つのAIエージェントが埋もれた個人制作ゲームの原石を発掘・紹介します</p>
 
   <!-- APIキー -->
   <div class="field">
@@ -267,47 +268,47 @@
     </div>
   </div>
 
-  <!-- ゲームタイトル / キーワード -->
+  <!-- 発掘ヒント -->
   <div class="field">
-    <label>ゲームタイトル または キーワード</label>
-    <textarea id="gameTitle" placeholder="例: Stardew Valley、ローグライク系の一人開発ゲーム、pixel art RPG indie 2024など"></textarea>
+    <label>発掘ヒント（ジャンル・雰囲気・テーマなど）</label>
+    <textarea id="hint" placeholder="例: 孤独な世界観のパズルゲーム、pixel artで作られた農場系、不思議な雰囲気のホラー…&#10;空欄でもOK — チームが独自に原石を選びます"></textarea>
+    <p class="hint-note">※ 具体的なタイトルより「こんな感じ」という手がかりが発掘向きです</p>
   </div>
 
-  <!-- 対象日付 / プラットフォーム -->
+  <!-- 発掘フィルター -->
   <div class="field-row">
     <div class="field">
-      <label>対象期間・年</label>
+      <label>発掘対象期間</label>
       <select id="period">
-        <option value="2025年〜2026年の最新">2025〜2026年（最新）</option>
-        <option value="2024年の">2024年</option>
-        <option value="2023年の">2023年</option>
-        <option value="近年注目の">近年注目</option>
-        <option value="歴史的名作">歴史的名作</option>
+        <option value="2024〜2026年にリリースされた">近作（2024〜2026年）</option>
+        <option value="2020〜2023年にリリースされた">やや前（2020〜2023年）</option>
+        <option value="2015〜2019年にリリースされた">往年（2015〜2019年）</option>
+        <option value="年代を問わない">年代不問</option>
       </select>
     </div>
     <div class="field">
-      <label>プラットフォーム</label>
+      <label>発掘場所</label>
       <select id="platform">
-        <option value="PC/Steam">PC / Steam</option>
-        <option value="Nintendo Switch">Nintendo Switch</option>
-        <option value="モバイル">モバイル</option>
-        <option value="全プラットフォーム">全プラットフォーム</option>
-        <option value="itch.io">itch.io</option>
+        <option value="itch.io や Steam の">itch.io / Steam</option>
+        <option value="Steam の">Steam</option>
+        <option value="itch.io の">itch.io</option>
+        <option value="ゲームジャム作品を含む">ゲームジャム作品</option>
+        <option value="全プラットフォームの">全プラットフォーム</option>
       </select>
     </div>
   </div>
 
-  <button class="run" id="runBtn" onclick="runTeam()">🎮 記事を生成する</button>
+  <button class="run" id="runBtn" onclick="runTeam()">💎 原石を発掘する</button>
 
   <div class="error-msg" id="errorMsg"></div>
 
   <!-- エージェント進捗チップ -->
   <div class="agents" id="agentChips" style="display:none">
-    <span class="agent-chip" id="chip-0">🔍 トレンド調査員</span>
-    <span class="agent-chip" id="chip-1">🕹️ ゲーム分析家</span>
-    <span class="agent-chip" id="chip-2">👨‍💻 開発者取材班</span>
-    <span class="agent-chip" id="chip-3">🎯 読者体験ライター</span>
-    <span class="agent-chip" id="chip-4">📰 記事編集長</span>
+    <span class="agent-chip" id="chip-0">🔭 原石ハンター</span>
+    <span class="agent-chip" id="chip-1">🔬 鑑定士</span>
+    <span class="agent-chip" id="chip-2">🕵️ 開発者探偵</span>
+    <span class="agent-chip" id="chip-3">🌱 体験証言ライター</span>
+    <span class="agent-chip" id="chip-4">📜 発掘記事編集長</span>
   </div>
 
   <!-- 出力エリア -->
@@ -315,8 +316,8 @@
 
     <div class="agent-block" id="block-0">
       <div class="agent-header">
-        <span class="agent-icon">🔍</span>
-        <span class="agent-name">トレンド調査員</span>
+        <span class="agent-icon">🔭</span>
+        <span class="agent-name">原石ハンター</span>
         <span class="agent-status" id="status-0">待機中</span>
       </div>
       <div class="agent-content" id="content-0"></div>
@@ -324,8 +325,8 @@
 
     <div class="agent-block" id="block-1">
       <div class="agent-header">
-        <span class="agent-icon">🕹️</span>
-        <span class="agent-name">ゲーム分析家</span>
+        <span class="agent-icon">🔬</span>
+        <span class="agent-name">鑑定士</span>
         <span class="agent-status" id="status-1">待機中</span>
       </div>
       <div class="agent-content" id="content-1"></div>
@@ -333,8 +334,8 @@
 
     <div class="agent-block" id="block-2">
       <div class="agent-header">
-        <span class="agent-icon">👨‍💻</span>
-        <span class="agent-name">開発者取材班</span>
+        <span class="agent-icon">🕵️</span>
+        <span class="agent-name">開発者探偵</span>
         <span class="agent-status" id="status-2">待機中</span>
       </div>
       <div class="agent-content" id="content-2"></div>
@@ -342,8 +343,8 @@
 
     <div class="agent-block" id="block-3">
       <div class="agent-header">
-        <span class="agent-icon">🎯</span>
-        <span class="agent-name">読者体験ライター</span>
+        <span class="agent-icon">🌱</span>
+        <span class="agent-name">体験証言ライター</span>
         <span class="agent-status" id="status-3">待機中</span>
       </div>
       <div class="agent-content" id="content-3"></div>
@@ -351,8 +352,8 @@
 
     <div class="agent-block final-block" id="block-4">
       <div class="agent-header">
-        <span class="agent-icon">📰</span>
-        <span class="agent-name">記事編集長 — 完成記事</span>
+        <span class="agent-icon">📜</span>
+        <span class="agent-name">発掘記事編集長 — 発掘レポート</span>
         <span class="agent-status" id="status-4">待機中</span>
       </div>
       <div class="agent-content" id="content-4"></div>
@@ -395,7 +396,7 @@ function hideError() {
 }
 
 async function streamMessage(apiKey, systemPrompt, userMessage, contentEl, statusEl, chipEl) {
-  statusEl.textContent = '取材中...';
+  statusEl.textContent = '調査中...';
   statusEl.className = 'agent-status working';
   chipEl.className = 'agent-chip active';
 
@@ -468,18 +469,16 @@ async function streamMessage(apiKey, systemPrompt, userMessage, contentEl, statu
 
 async function runTeam() {
   const apiKey = document.getElementById('apiKey').value.trim();
-  const gameTitle = document.getElementById('gameTitle').value.trim();
+  const hint = document.getElementById('hint').value.trim() || '特になし（チームに一任）';
   const period = document.getElementById('period').value;
   const platform = document.getElementById('platform').value;
 
   hideError();
-
   if (!apiKey) { showError('APIキーを入力してください'); return; }
-  if (!gameTitle) { showError('ゲームタイトルまたはキーワードを入力してください'); return; }
 
   const runBtn = document.getElementById('runBtn');
   runBtn.disabled = true;
-  runBtn.textContent = '🎮 生成中...';
+  runBtn.textContent = '💎 発掘中...';
 
   document.getElementById('agentChips').style.display = 'flex';
   document.getElementById('outputSection').classList.add('visible');
@@ -494,59 +493,79 @@ async function runTeam() {
   }
 
   const g = (id) => document.getElementById(id);
-  const topic = `${period}${platform}の個人制作インディーゲーム: ${gameTitle}`;
+  const mission = `${period}${platform}個人制作インディーゲームの原石を発掘する。発掘ヒント: ${hint}`;
 
   try {
-    // ── Step 1: トレンド調査員 ──
+    // ── Step 1: 原石ハンター ──
     g('block-0').classList.add('active');
-    const trends = await streamMessage(
+    const candidates = await streamMessage(
       apiKey,
-      `あなたはインディーゲーム専門のトレンドリサーチャーです。個人開発者（ソロデベロッパー）が手がけたゲームに特化した調査を行います。Steam、itch.io、SNS（X/Twitter、Reddit、TikTok）でのバズり具合、ユーザーレビューの傾向、インディーコミュニティでの評判を詳しく調査します。「なぜ今これが注目されているのか」という背景も含めてまとめてください。`,
-      `以下のテーマに関する${period}の注目インディーゲームについてリサーチしてください。\n\nテーマ: ${topic}\n\n以下を含めてください:\n1. 注目されているタイトルとその概要（3〜5本）\n2. 各タイトルのSNS・コミュニティでの反響\n3. 注目を集めている理由・トレンドの背景\n4. 個人制作ならではの特徴・売り\n5. ユーザー評価の傾向`,
+      `あなたはインディーゲームの原石を発掘するハンターです。
+有名作・話題作ではなく、まだ多くの人に知られていない「埋もれた傑作」を嗅ぎ分ける嗅覚を持っています。
+itch.io のゲームジャム入賞作、Steam のレビュー数が少ないのに評価が異常に高い作品、
+個人開発者がひっそりと公開した作品などを重点的に探します。
+「なぜこれが埋もれているのか」「なぜ発掘する価値があるのか」を常に意識してください。`,
+      `以下の条件で個人制作インディーゲームの原石を探してください。\n\nミッション: ${mission}\n\n以下を含めて報告:\n1. 候補タイトル（3〜4本）と各タイトルの埋もれている理由\n2. 各タイトルの第一印象・「原石感」を感じた決め手\n3. 知名度の低さ・露出の少なさについての考察\n4. 発掘価値が最も高いと判断した1本の選定理由\n5. そのゲームが輝く可能性を秘めているポイント`,
       g('content-0'), g('status-0'), g('chip-0')
     );
     g('block-0').classList.remove('active');
     g('block-0').classList.add('done');
 
-    // ── Step 2: ゲーム分析家 ──
+    // ── Step 2: 鑑定士 ──
     g('block-1').classList.add('active');
-    const analysis = await streamMessage(
+    const appraisal = await streamMessage(
       apiKey,
-      `あなたはインディーゲームの専門アナリストです。ゲームメカニクス、アートスタイル、ストーリーテリング、サウンドデザインなど多角的な視点でゲームを深く分析します。大手スタジオ作品と比較したインディーゲームの独自性や革新性に特に注目してください。`,
-      `トレンド調査員のリサーチをもとに、ピックアップされたゲームを詳細分析してください。\n\n【トレンド調査】\n${trends}\n\n以下の観点で最も注目すべきタイトル（1〜2本）を深掘り分析:\n1. ゲームメカニクスの特徴と革新性\n2. ビジュアル・アートスタイルの魅力\n3. ストーリー・世界観の深み\n4. サウンド・音楽の演出\n5. インディーゲームとしての独自ポジション\n6. 同ジャンルの競合作との差別化ポイント`,
+      `あなたはインディーゲームの鑑定士です。
+「原石」の本質的な価値を見抜くプロフェッショナルです。
+表面的な完成度ではなく、その作品に宿るユニークなアイデア・独自のビジョン・
+制作者の個性・他にない体験を丁寧に評価します。
+磨けば光るポテンシャルを、具体的な根拠とともに鑑定書にまとめてください。`,
+      `原石ハンターが発掘した候補をもとに、選定された作品の鑑定を行ってください。\n\n【発掘報告】\n${candidates}\n\n鑑定書に含める内容:\n1. ゲームメカニクスのオリジナリティ（他作品にない独自性）\n2. ビジュアル・アートの個性（個人制作ならではの味）\n3. 世界観・テーマの深み\n4. 「大手スタジオには作れない」要素の特定\n5. 原石としての総合評価と磨けば光る理由`,
       g('content-1'), g('status-1'), g('chip-1')
     );
     g('block-1').classList.remove('active');
     g('block-1').classList.add('done');
 
-    // ── Step 3: 開発者取材班 ──
+    // ── Step 3: 開発者探偵 ──
     g('block-2').classList.add('active');
     const devStory = await streamMessage(
       apiKey,
-      `あなたはインディーゲーム開発者専門のジャーナリストです。一人または少人数での開発の苦労や工夫、使用ツール・エンジン、開発期間、資金調達の方法（クラウドファンディング、Early Accessなど）、開発者のバックグラウンドや動機について詳しく調べます。「普通の人がゲームを作った」という感動的な側面を丁寧に伝えます。`,
-      `これまでの調査をもとに、ピックアップされたゲームの開発ストーリーを掘り下げてください。\n\n【トレンド調査】\n${trends}\n\n【ゲーム分析】\n${analysis}\n\n以下を含めた開発者ストーリーをまとめてください:\n1. 開発者のプロフィールとバックグラウンド\n2. 開発を始めたきっかけ・動機\n3. 使用した開発ツール・エンジン（Unity/Godot/RPGツクール等）\n4. 開発期間と一人開発ならではの苦労\n5. マーケティング・販売戦略（SNS活用など）\n6. 印象的なエピソード・名言`,
+      `あなたはインディーゲーム開発者の素顔を掘り起こす探偵です。
+一人でゲームを作るということの本質——孤独な作業、限られたリソース、
+それでも作り続ける理由——を丁寧に調査します。
+開発者がどんな人物で、何を伝えたくてこのゲームを作ったのかを
+SNS投稿・インタビュー・開発ブログの痕跡から推理・再構成してください。`,
+      `発掘・鑑定された作品の開発者像と制作背景を探偵として調査してください。\n\n【発掘報告】\n${candidates}\n\n【鑑定書】\n${appraisal}\n\n調査報告書に含める内容:\n1. 開発者のプロフィール推測（職業・年齢層・バックグラウンド）\n2. このゲームを作るに至った動機・原体験\n3. 使用ツール・エンジン・制作環境\n4. 一人で作ることで生まれた制約と、それを逆手にとった工夫\n5. 開発者のゲームに込めたメッセージ・想い`,
       g('content-2'), g('status-2'), g('chip-2')
     );
     g('block-2').classList.remove('active');
     g('block-2').classList.add('done');
 
-    // ── Step 4: 読者体験ライター ──
+    // ── Step 4: 体験証言ライター ──
     g('block-3').classList.add('active');
-    const playerExp = await streamMessage(
+    const testimony = await streamMessage(
       apiKey,
-      `あなたはゲーム体験・ユーザー感情の専門ライターです。プレイヤーがゲームを通じて何を感じ、何を得るかを言語化するのが得意です。感情的な没入感、達成感、驚き、コミュニティでの共有体験など、プレイヤー視点から見たゲームの魅力を生き生きと表現します。読者が「このゲームを遊んでみたい！」と感じるような文章を書いてください。`,
-      `これまでの調査・分析をもとに、プレイヤー体験の観点からゲームの魅力を言語化してください。\n\n【トレンド調査】\n${trends}\n\n【ゲーム分析】\n${analysis}\n\n【開発者ストーリー】\n${devStory}\n\n以下を含めたプレイヤー体験レポートを作成:\n1. 実際のプレイヤーレビュー・感想の傾向\n2. 「このゲームならでは」の感動・驚きの体験\n3. どんな人に刺さるか（ターゲット層・刺さりポイント）\n4. コミュニティやSNSでの盛り上がり方\n5. プレイ前後での感情の変化`,
+      `あなたは「埋もれたゲームを遊んだプレイヤー」の体験を言語化する証言ライターです。
+有名作のレビューとは違う、まだほとんど誰も語っていない体験の新鮮さを表現します。
+「こんなゲームが存在したのか」という発見の感動、
+「なぜみんな知らないんだろう」という不思議さ、
+小さいけれど確かに心に刺さる体験を、丁寧に言葉にしてください。`,
+      `発掘された原石ゲームを実際にプレイしたプレイヤーの視点で体験を証言してください。\n\n【発掘報告】\n${candidates}\n\n【鑑定書】\n${appraisal}\n\n【開発者調査】\n${devStory}\n\n証言に含める内容:\n1. 初めて起動したときの第一印象・画面の雰囲気\n2. 「あ、これは普通じゃない」と気づいた瞬間\n3. 埋もれているからこそ感じる「発見の喜び」\n4. このゲームが刺さる人物像（具体的に）\n5. 遊び終わったあとに残る感情・余韻`,
       g('content-3'), g('status-3'), g('chip-3')
     );
     g('block-3').classList.remove('active');
     g('block-3').classList.add('done');
 
-    // ── Step 5: 記事編集長（完成記事） ──
+    // ── Step 5: 発掘記事編集長（完成レポート） ──
     g('block-4').classList.add('active');
     await streamMessage(
       apiKey,
-      `あなたはインディーゲーム専門メディアの編集長です。個人制作ゲームの魅力を広く伝えることに情熱を持っています。チームが集めた素材を統合し、読者がゲームを遊びたくなるような完成度の高い記事に仕上げます。見出し・リード文・本文の構成を整え、インディーゲームへの愛と敬意が伝わる文章を書いてください。`,
-      `チームの全調査・分析を統合して、完成した記事を執筆してください。\n\n【トレンド調査】\n${trends}\n\n【ゲーム分析】\n${analysis}\n\n【開発者ストーリー】\n${devStory}\n\n【プレイヤー体験】\n${playerExp}\n\n要件:\n- キャッチーな記事タイトル（日本語）\n- リード文（100〜150字）\n- 本文（2000〜3000字）\n- 「個人制作」「ソロ開発」の偉大さを伝える\n- 開発者への敬意と読者への推薦を込める\n- 読者が読後にゲームを調べたくなる構成`,
+      `あなたはインディーゲームの原石を世に送り出す発掘記事の編集長です。
+チームが掘り当てた原石を、まだゲームを知らない読者に伝える発掘レポートを書きます。
+「なぜこのゲームは埋もれているのか」「なぜあなたが最初の発見者になれるのか」
+という興奮と、個人開発者へのリスペクトが伝わる文章を書いてください。
+読者が記事を読み終えたあと、今すぐそのゲームを検索したくなることを目指してください。`,
+      `チームの全調査を統合して、発掘レポートを執筆してください。\n\n【発掘報告】\n${candidates}\n\n【鑑定書】\n${appraisal}\n\n【開発者調査】\n${devStory}\n\n【プレイヤー証言】\n${testimony}\n\n発掘レポートの要件:\n- 「原石発掘」感を前面に出したキャッチーなタイトル\n- リード文（100〜150字）：「なぜ今これを読む必要があるか」を凝縮\n- 本文（2000〜3000字）\n- 「あなたが知らないだけで、すごいゲームがある」という発見の喜びを伝える\n- 個人開発者が一人で作り上げた事実への純粋な敬意\n- 記事末尾に「このゲームを探す方法」を添える`,
       g('content-4'), g('status-4'), g('chip-4')
     );
     g('block-4').classList.remove('active');
@@ -559,7 +578,7 @@ async function runTeam() {
   }
 
   runBtn.disabled = false;
-  runBtn.textContent = '🎮 記事を生成する';
+  runBtn.textContent = '💎 原石を発掘する';
 }
 
 function copyArticle() {
@@ -572,12 +591,12 @@ function copyArticle() {
 }
 
 function downloadArticle() {
-  const gameTitle = document.getElementById('gameTitle').value.trim();
+  const hint = document.getElementById('hint').value.trim() || '原石発掘';
   const text = document.getElementById('content-4').textContent;
-  const blob = new Blob([`テーマ: ${gameTitle}\n${'='.repeat(40)}\n\n${text}`], { type: 'text/plain;charset=utf-8' });
+  const blob = new Blob([`発掘ヒント: ${hint}\n${'='.repeat(40)}\n\n${text}`], { type: 'text/plain;charset=utf-8' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `indie_game_article_${Date.now()}.txt`;
+  a.download = `gem_discovery_${Date.now()}.txt`;
   a.click();
 }
 </script>
