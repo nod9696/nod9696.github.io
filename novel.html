@@ -372,7 +372,7 @@ async function streamMessage(apiKey, systemPrompt, userMessage, contentEl, statu
     model: MODEL,
     max_tokens: 4096,
     stream: true,
-    thinking: { type: "adaptive" },
+    thinking: { type: "enabled", budget_tokens: 2000 },
     system: systemPrompt,
     messages: [{ role: "user", content: userMessage }]
   };
@@ -383,6 +383,7 @@ async function streamMessage(apiKey, systemPrompt, userMessage, contentEl, statu
       "Content-Type": "application/json",
       "x-api-key": apiKey,
       "anthropic-version": "2023-06-01",
+      "anthropic-beta": "interleaved-thinking-2025-05-14",
       "anthropic-dangerous-direct-browser-access": "true",
     },
     body: JSON.stringify(body)
