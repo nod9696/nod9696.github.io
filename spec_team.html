@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>ゲーム仕様書作成チーム</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -13,6 +13,9 @@
       font-family: -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif;
       min-height: 100vh;
       padding: 24px 16px 60px;
+      padding-bottom: max(60px, calc(60px + env(safe-area-inset-bottom)));
+      padding-left: max(16px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
     }
 
     h1 {
@@ -43,11 +46,12 @@
       border: 1px solid #2e2f3e;
       border-radius: 10px;
       color: #e8e8f0;
-      font-size: 15px;
+      font-size: 16px; /* 16px未満だとiOSが自動ズームするため */
       padding: 12px 14px;
       outline: none;
       transition: border-color 0.2s;
       -webkit-appearance: none;
+      -webkit-overflow-scrolling: touch;
     }
 
     input:focus, textarea:focus { border-color: #ff8c42; }
@@ -67,11 +71,13 @@
       border: none;
       border-radius: 10px;
       color: #aaa;
-      font-size: 13px;
-      padding: 12px 14px;
+      font-size: 14px;
+      padding: 12px 16px;
+      min-height: 44px;
       cursor: pointer;
       white-space: nowrap;
       -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
     .btn-save:active { background: #3a3b50; }
 
@@ -127,9 +133,9 @@
     }
 
     .question-card textarea {
-      min-height: 100px;
+      min-height: 120px;
       resize: vertical;
-      font-size: 14px;
+      font-size: 16px;
       line-height: 1.7;
     }
 
@@ -163,11 +169,13 @@
       border: none;
       border-radius: 12px;
       color: #fff;
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 700;
-      padding: 15px;
+      padding: 16px 15px;
+      min-height: 52px;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
       transition: opacity 0.2s;
     }
 
@@ -180,12 +188,14 @@
       border: none;
       border-radius: 12px;
       color: #fff;
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 700;
-      padding: 15px;
+      padding: 16px 15px;
+      min-height: 52px;
       cursor: pointer;
       margin-top: 8px;
       -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
       transition: opacity 0.2s;
     }
 
@@ -280,10 +290,12 @@
       border: 1px solid #2e2f3e;
       border-radius: 10px;
       color: #aaa;
-      font-size: 14px;
-      padding: 12px;
+      font-size: 15px;
+      padding: 14px 12px;
+      min-height: 48px;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
 
     .actions button:active { background: #252636; }
