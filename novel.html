@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>小説作成チーム</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0d0e14;
+      color: #e8e8f0;
+      font-family: -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif;
+      min-height: 100vh;
+      padding: 20px 16px 48px;
+    }
+
+    h1 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #fff;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 28px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 6px;
+      letter-spacing: 0.03em;
+    }
+
+    input, textarea {
+      width: 100%;
+      background: #1a1b24;
+      border: 1px solid #2e2f3e;
+      border-radius: 10px;
+      color: #e8e8f0;
+      font-size: 15px;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #6c7aff;
+    }
+
+    input[type="password"] {
+      font-family: monospace;
+      letter-spacing: 0.1em;
+    }
+
+    .field { margin-bottom: 16px; }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+      font-family: -apple-system, "Hiragino Sans", sans-serif;
+    }
+
+    .key-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+    }
+
+    .key-row input { flex: 1; }
+
+    .btn-save {
+      background: #2e2f3e;
+      border: none;
+      border-radius: 10px;
+      color: #aaa;
+      font-size: 13px;
+      padding: 12px 14px;
+      cursor: pointer;
+      white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-save:active { background: #3a3b50; }
+
+    button.run {
+      width: 100%;
+      background: linear-gradient(135deg, #6c7aff, #a06cff);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 15px;
+      cursor: pointer;
+      margin-top: 8px;
+      -webkit-tap-highlight-color: transparent;
+      transition: opacity 0.2s;
+    }
+
+    button.run:disabled { opacity: 0.4; }
+    button.run:active:not(:disabled) { opacity: 0.85; }
+
+    /* エージェント進捗 */
+    .agents {
+      display: flex;
+      gap: 6px;
+      margin: 24px 0 20px;
+      flex-wrap: wrap;
+    }
+
+    .agent-chip {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid #2e2f3e;
+      color: #555;
+      transition: all 0.3s;
+    }
+
+    .agent-chip.active {
+      border-color: #6c7aff;
+      color: #6c7aff;
+      background: #6c7aff18;
+    }
+
+    .agent-chip.done {
+      border-color: #3a5;
+      color: #3a5;
+      background: #3a551a18;
+    }
+
+    /* 出力エリア */
+    .output-section { display: none; }
+    .output-section.visible { display: block; }
+
+    .agent-block {
+      margin-bottom: 24px;
+      border: 1px solid #2e2f3e;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .agent-block.active { border-color: #6c7aff55; }
+    .agent-block.done { border-color: #3a552244; }
+
+    .agent-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: #141520;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .agent-icon { font-size: 16px; }
+    .agent-name { flex: 1; }
+    .agent-status { font-size: 11px; color: #555; }
+    .agent-status.working { color: #6c7aff; }
+    .agent-status.done { color: #3a5; }
+
+    .agent-content {
+      padding: 14px;
+      font-size: 14px;
+      line-height: 1.8;
+      color: #ccd;
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 40px;
+    }
+
+    /* 最終稿 */
+    .final-block .agent-header {
+      background: #1a1428;
+      border-bottom: 1px solid #3e2f5e;
+    }
+
+    .final-block { border-color: #6a3aff55; }
+    .final-block.done { border-color: #a06cff88; }
+
+    .final-block .agent-content {
+      font-size: 15px;
+      line-height: 2;
+      color: #e8e8f8;
+    }
+
+    /* コピー・ダウンロード */
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .actions button {
+      flex: 1;
+      background: #1a1b24;
+      border: 1px solid #2e2f3e;
+      border-radius: 10px;
+      color: #aaa;
+      font-size: 14px;
+      padding: 12px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .actions button:active { background: #252636; }
+
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: #6c7aff;
+      vertical-align: text-bottom;
+      animation: blink 0.7s step-end infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .error-msg {
+      background: #2a1518;
+      border: 1px solid #aa3344;
+      border-radius: 10px;
+      color: #ff8090;
+      font-size: 13px;
+      padding: 12px 14px;
+      margin-top: 16px;
+      display: none;
+    }
+
+    .error-msg.visible { display: block; }
+  </style>
+</head>
+
+<body>
+
+  <h1>🖊️ 小説作成チーム</h1>
+  <p class="subtitle">5つのAIエージェントが協力して小説を書きます</p>
+
+  <!-- APIキー -->
+  <div class="field">
+    <label>Anthropic API Key</label>
+    <div class="key-row">
+      <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off">
+      <button class="btn-save" onclick="saveKey()">保存</button>
+    </div>
+  </div>
+
+  <!-- テーマ -->
+  <div class="field">
+    <label>小説のテーマ</label>
+    <textarea id="theme" placeholder="例: 記憶を失った老いた音楽家と、彼の音楽を受け継いだ若者の物語"></textarea>
+  </div>
+
+  <button class="run" id="runBtn" onclick="runTeam()">✦ 小説を生成する</button>
+
+  <div class="error-msg" id="errorMsg"></div>
+
+  <!-- エージェント進捗チップ -->
+  <div class="agents" id="agentChips" style="display:none">
+    <span class="agent-chip" id="chip-0">📝 プロット作家</span>
+    <span class="agent-chip" id="chip-1">👤 キャラクター設計</span>
+    <span class="agent-chip" id="chip-2">🌿 場面描写家</span>
+    <span class="agent-chip" id="chip-3">💬 対話作家</span>
+    <span class="agent-chip" id="chip-4">✏️ 編集者</span>
+  </div>
+
+  <!-- 出力エリア -->
+  <div class="output-section" id="outputSection">
+
+    <div class="agent-block" id="block-0">
+      <div class="agent-header">
+        <span class="agent-icon">📝</span>
+        <span class="agent-name">プロット作家</span>
+        <span class="agent-status" id="status-0">待機中</span>
+      </div>
+      <div class="agent-content" id="content-0"></div>
+    </div>
+
+    <div class="agent-block" id="block-1">
+      <div class="agent-header">
+        <span class="agent-icon">👤</span>
+        <span class="agent-name">キャラクター設計</span>
+        <span class="agent-status" id="status-1">待機中</span>
+      </div>
+      <div class="agent-content" id="content-1"></div>
+    </div>
+
+    <div class="agent-block" id="block-2">
+      <div class="agent-header">
+        <span class="agent-icon">🌿</span>
+        <span class="agent-name">場面描写家</span>
+        <span class="agent-status" id="status-2">待機中</span>
+      </div>
+      <div class="agent-content" id="content-2"></div>
+    </div>
+
+    <div class="agent-block" id="block-3">
+      <div class="agent-header">
+        <span class="agent-icon">💬</span>
+        <span class="agent-name">対話作家</span>
+        <span class="agent-status" id="status-3">待機中</span>
+      </div>
+      <div class="agent-content" id="content-3"></div>
+    </div>
+
+    <div class="agent-block final-block" id="block-4">
+      <div class="agent-header">
+        <span class="agent-icon">✏️</span>
+        <span class="agent-name">編集者 — 完成稿</span>
+        <span class="agent-status" id="status-4">待機中</span>
+      </div>
+      <div class="agent-content" id="content-4"></div>
+    </div>
+
+    <div class="actions" id="actionBtns" style="display:none">
+      <button onclick="copyNovel()">📋 コピー</button>
+      <button onclick="downloadNovel()">⬇️ 保存</button>
+    </div>
+
+  </div>
+
+<script>
+const MODEL = "claude-opus-4-6";
+const API_URL = "https://api.anthropic.com/v1/messages";
+
+// APIキー保存・読み込み
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('anthropic_api_key');
+  if (saved) document.getElementById('apiKey').value = saved;
+});
+
+function saveKey() {
+  const key = document.getElementById('apiKey').value.trim();
+  if (key) {
+    localStorage.setItem('anthropic_api_key', key);
+    const btn = document.querySelector('.btn-save');
+    btn.textContent = '✓ 保存';
+    setTimeout(() => btn.textContent = '保存', 1500);
+  }
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = msg;
+  el.classList.add('visible');
+}
+
+function hideError() {
+  document.getElementById('errorMsg').classList.remove('visible');
+}
+
+// ストリーミングAPI呼び出し
+async function streamMessage(apiKey, systemPrompt, userMessage, contentEl, statusEl, chipEl) {
+  statusEl.textContent = '執筆中...';
+  statusEl.className = 'agent-status working';
+  chipEl.className = 'agent-chip active';
+
+  // カーソル表示
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor';
+  contentEl.appendChild(cursor);
+
+  const body = {
+    model: MODEL,
+    max_tokens: 4096,
+    stream: true,
+    thinking: { type: "enabled", budget_tokens: 2000 },
+    system: systemPrompt,
+    messages: [{ role: "user", content: userMessage }]
+  };
+
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+      "anthropic-beta": "interleaved-thinking-2025-05-14",
+      "anthropic-dangerous-direct-browser-access": "true",
+    },
+    body: JSON.stringify(body)
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message || `HTTP ${res.status}`);
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let fullText = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop();
+
+    for (const line of lines) {
+      if (!line.startsWith('data: ')) continue;
+      const data = line.slice(6).trim();
+      if (data === '[DONE]') continue;
+
+      try {
+        const evt = JSON.parse(data);
+        if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
+          fullText += evt.delta.text;
+          // カーソルの前にテキストを挿入
+          contentEl.insertBefore(document.createTextNode(evt.delta.text), cursor);
+          contentEl.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+      } catch {}
+    }
+  }
+
+  cursor.remove();
+  statusEl.textContent = '完了';
+  statusEl.className = 'agent-status done';
+  chipEl.className = 'agent-chip done';
+
+  return fullText;
+}
+
+async function runTeam() {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  const theme = document.getElementById('theme').value.trim();
+
+  hideError();
+
+  if (!apiKey) { showError('APIキーを入力してください'); return; }
+  if (!theme) { showError('テーマを入力してください'); return; }
+
+  // UI初期化
+  const runBtn = document.getElementById('runBtn');
+  runBtn.disabled = true;
+  runBtn.textContent = '✦ 生成中...';
+
+  document.getElementById('agentChips').style.display = 'flex';
+  document.getElementById('outputSection').classList.add('visible');
+  document.getElementById('actionBtns').style.display = 'none';
+
+  for (let i = 0; i < 5; i++) {
+    document.getElementById(`content-${i}`).textContent = '';
+    document.getElementById(`status-${i}`).textContent = '待機中';
+    document.getElementById(`status-${i}`).className = 'agent-status';
+    document.getElementById(`block-${i}`).className = i === 4 ? 'agent-block final-block' : 'agent-block';
+    document.getElementById(`chip-${i}`).className = 'agent-chip';
+  }
+
+  const g = (id) => document.getElementById(id);
+
+  try {
+    // ── Step 1: プロット作家 ──
+    g('block-0').classList.add('active');
+    const plot = await streamMessage(
+      apiKey,
+      `あなたは才能あるプロット作家です。読者を引き込む魅力的なストーリー構造を設計することが得意です。三幕構成や起承転結など、物語の骨格を明確に示してください。`,
+      `以下のテーマで短編小説のプロットを作成してください。\n\nテーマ: ${theme}\n\n以下の形式で:\n1. タイトル案\n2. あらすじ（200字程度）\n3. 詳細プロット（起承転結）\n4. 重要な伏線・テーマ`,
+      g('content-0'), g('status-0'), g('chip-0')
+    );
+    g('block-0').classList.remove('active');
+    g('block-0').classList.add('done');
+
+    // ── Step 2: キャラクター設計 ──
+    g('block-1').classList.add('active');
+    const characters = await streamMessage(
+      apiKey,
+      `あなたは優れたキャラクター設計の専門家です。立体的で魅力的な登場人物を生み出すことが得意です。キャラクターの内面、動機、成長を深く掘り下げてください。`,
+      `これまでのチームの成果物:\n\n【プロット】\n${plot}\n\nプロットに基づいて登場人物を詳細に設計してください。各キャラクターについて: 名前・年齢・外見、性格・口癖、バックストーリー、動機・内的葛藤、他キャラクターとの関係を記載。`,
+      g('content-1'), g('status-1'), g('chip-1')
+    );
+    g('block-1').classList.remove('active');
+    g('block-1').classList.add('done');
+
+    // ── Step 3: 場面描写家 ──
+    g('block-2').classList.add('active');
+    const scenes = await streamMessage(
+      apiKey,
+      `あなたは情景描写の巧みな作家です。五感を使った豊かな描写で読者を物語の世界に引き込みます。視覚・聴覚・嗅覚・触覚を駆使して、生き生きとした場面を描いてください。`,
+      `これまでのチームの成果物:\n\n【プロット】\n${plot}\n\n【キャラクター設定】\n${characters}\n\n主要な場面の詳細な描写を書いてください: 1.物語の冒頭 2.転換点の場面 3.クライマックスの場面`,
+      g('content-2'), g('status-2'), g('chip-2')
+    );
+    g('block-2').classList.remove('active');
+    g('block-2').classList.add('done');
+
+    // ── Step 4: 対話作家 ──
+    g('block-3').classList.add('active');
+    const dialogues = await streamMessage(
+      apiKey,
+      `あなたはセリフと対話の名手です。各キャラクターの個性が光る自然で生き生きとした会話を書きます。セリフを通じてキャラクターの性格・感情・関係性を表現してください。`,
+      `これまでのチームの成果物:\n\n【プロット】\n${plot}\n\n【キャラクター設定】\n${characters}\n\n【場面描写】\n${scenes}\n\n重要な対話シーンを書いてください: 1.重要な出会いの場面 2.感情的な対話シーン 3.クライマックスの決定的なセリフ`,
+      g('content-3'), g('status-3'), g('chip-3')
+    );
+    g('block-3').classList.remove('active');
+    g('block-3').classList.add('done');
+
+    // ── Step 5: 編集者（最終稿） ──
+    g('block-4').classList.add('active');
+    await streamMessage(
+      apiKey,
+      `あなたは経験豊富な文芸編集者兼作家です。チームが作り上げた素材を統合し、完成度の高い短編小説として仕上げます。文体の統一感、物語のテンポ、感情の起伏を整えながら、読者の心に残る作品を完成させてください。`,
+      `これまでのチームの成果物:\n\n【プロット】\n${plot}\n\n【キャラクター設定】\n${characters}\n\n【場面描写】\n${scenes}\n\n【対話シーン】\n${dialogues}\n\nチームの全成果物を統合して、完成した短編小説を執筆してください（3000〜5000字程度）。`,
+      g('content-4'), g('status-4'), g('chip-4')
+    );
+    g('block-4').classList.remove('active');
+    g('block-4').classList.add('done');
+
+    document.getElementById('actionBtns').style.display = 'flex';
+
+  } catch (err) {
+    showError('エラー: ' + err.message);
+  }
+
+  runBtn.disabled = false;
+  runBtn.textContent = '✦ 小説を生成する';
+}
+
+function copyNovel() {
+  const text = document.getElementById('content-4').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.actions button');
+    btn.textContent = '✓ コピー完了';
+    setTimeout(() => btn.textContent = '📋 コピー', 2000);
+  });
+}
+
+function downloadNovel() {
+  const theme = document.getElementById('theme').value.trim();
+  const text = document.getElementById('content-4').textContent;
+  const blob = new Blob([`テーマ: ${theme}\n${'='.repeat(40)}\n\n${text}`], { type: 'text/plain;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `novel_${Date.now()}.txt`;
+  a.click();
+}
+</script>
+
+</body>
+</html>
