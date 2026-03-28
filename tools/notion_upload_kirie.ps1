@@ -2,7 +2,7 @@
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
 
-$token = '$env:NOTION_TOKEN'
+$token = $env:NOTION_TOKEN
 $headers = @{'Authorization'="Bearer $token"; 'Notion-Version'='2022-06-28'; 'Content-Type'='application/json; charset=utf-8'}
 $kiriePageId = '32b45ad0-1ef0-81be-bdc1-c48646692738'
 $scenarioDir = 'f:/Claude/KirieSaki/Assets/StreamingAssets/Scenarios'

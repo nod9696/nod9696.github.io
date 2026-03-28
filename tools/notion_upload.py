@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import json, os, time, urllib.request, urllib.error
 
-TOKEN = '$(os.environ.get("NOTION_TOKEN", ""))'
+TOKEN = os.environ.get('NOTION_TOKEN', '')
 PARENT_ID = '2c745ad01ef080e5a71ad0b7f9dedf07'
 KIRIE_PAGE_ID = '32b45ad0-1ef0-81be-bdc1-c48646692738'
 DELIGHT_PAGE_ID = '32b45ad0-1ef0-8103-a677-f946122dff7d'

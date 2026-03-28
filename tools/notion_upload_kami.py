@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import json, os, time, urllib.request, urllib.error
 
-TOKEN = '$(os.environ.get("NOTION_TOKEN", ""))'
+TOKEN = os.environ.get('NOTION_TOKEN', '')
 PARENT_ID = '2c745ad01ef080e5a71ad0b7f9dedf07'
 SCENARIO_DIR = r'f:\Claude\KamiNoFuruMachi\My project\Assets\StreamingAssets\Scenarios'
 

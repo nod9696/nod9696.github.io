@@ -7,7 +7,7 @@ Manifest: f:/Claude/notion_sync_manifest.json
 """
 import json, os, time, urllib.request, urllib.error, sys
 
-TOKEN    = '$(os.environ.get("NOTION_SYNC_TOKEN", ""))'
+TOKEN    = os.environ.get('NOTION_SYNC_TOKEN', '')
 MANIFEST = r'f:\Claude\notion_sync_manifest.json'
 
 HEADERS = {
