@@ -1,0 +1,63 @@
+// =============================================================================
+// FlagManager.cs への IFlagManager 実装 — 差分提案ノート
+// =============================================================================
+//
+// 【結論】FlagManager は既に IFlagManager を完全実装済み。追記不要。
+//
+//   現在の宣言:
+//     public class FlagManager : IFlagManager   ← 既に実装済み
+//
+//   IFlagManager が要求する全メソッドが実装されていることを確認:
+//     ✅ void SetFlag(string key, int value)
+//     ✅ int  GetFlag(string key)
+//     ✅ bool GetBoolFlag(string key)
+//     ✅ void SetBoolFlag(string key, bool value)
+//
+// =============================================================================
+// もし IFlagManager が未実装だった場合の diff（参考）
+// =============================================================================
+//
+// --- a/Assets/Scripts/Core/FlagManager.cs
+// +++ b/Assets/Scripts/Core/FlagManager.cs
+//
+// @@ -7,7 +7,7 @@ namespace KamiNoFuruMachi
+//  {
+// -    public class FlagManager
+// +    public class FlagManager : IFlagManager
+//  {
+//
+// =============================================================================
+// 補足: GameSceneController からの使用方法
+// =============================================================================
+//
+//   GameManager.Flags は FlagManager 型で公開されているが、
+//   DialogueEngine.Initialize() は IFlagManager を要求する。
+//
+//   FlagManager : IFlagManager が成立しているため、以下のキャストは不要:
+//     // 不要: (IFlagManager)GameManager.Instance.Flags
+//     IFlagManager flagManager = GameManager.Instance.Flags;  // 暗黙の upcast で OK
+//
+// =============================================================================
+// 補足: FlagManager の拡張メソッド (string フラグ) について
+// =============================================================================
+//
+//   FlagManager は IFlagManager 以外に以下のメソッドも持つ:
+//     string GetStringFlag(string key)
+//     void   SetStringFlag(string key, string value)
+//
+//   これらは IFlagManager インターフェースに含まれないため、
+//   DialogueEngine からは直接アクセスできない。
+//   シナリオで string フラグが必要になった場合は IFlagManager に追加することを推奨:
+//
+//   // DialogueEngine.cs (インターフェース拡張案)
+//   public interface IFlagManager
+//   {
+//       void   SetFlag(string key, int value);
+//       int    GetFlag(string key);
+//       bool   GetBoolFlag(string key);
+//       void   SetBoolFlag(string key, bool value);
+// +     string GetStringFlag(string key);      // 追加案
+// +     void   SetStringFlag(string key, string value);  // 追加案
+//   }
+//
+// =============================================================================

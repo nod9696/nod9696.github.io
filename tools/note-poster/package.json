@@ -1,0 +1,15 @@
+{
+  "name": "note-poster",
+  "version": "1.0.0",
+  "description": "週刊インディーゲームブログの note.com 自動投稿スクリプト",
+  "scripts": {
+    "setup": "node setup-session.js",
+    "post": "node post-to-note.js",
+    "post:dry": "node post-to-note.js --dry-run"
+  },
+  "dependencies": {
+    "playwright": "^1.43.0",
+    "marked": "^12.0.0",
+    "dotenv": "^16.4.0"
+  }
+}

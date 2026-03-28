@@ -1,0 +1,404 @@
+{
+  "chapterId": "chapter01",
+  "title": "第1話「出会い」",
+  "commands": [
+    {
+      "cmd": "bgm",
+      "id": "nainfall_ambient",
+      "fade": 2.0
+    },
+    {
+      "cmd": "bg",
+      "id": "abandoned_chapel",
+      "transition": "fade"
+    },
+    {
+      "cmd": "effect",
+      "type": "fade",
+      "intensity": 1.0,
+      "duration": 1.5,
+      "color": "black"
+    },
+    {
+      "cmd": "text",
+      "char": "narrator",
+      "body": "雨が降っている。神の降る街――ナインフォールに、今日も静かに神が降る。"
+    },
+    {
+      "cmd": "text",
+      "char": "narrator",
+      "body": "かつて信仰の中心だったこの礼拝堂は、今や廃墟だ。砕けた祭壇、煤けたステンドグラス、腐りかけた長椅子。それでも屋根は雨を凌いでくれる。"
+    },
+    {
+      "cmd": "se",
+      "id": "rain_heavy"
+    },
+    {
+      "cmd": "text",
+      "char": "narrator",
+      "body": "俺の名はカナタ。この街で唯一の――いや、もうそんな肩書きに意味はない。ただの、雨宿りをする男だ。"
+    },
+    {
+      "cmd": "sprite",
+      "char": "kanata",
+      "pose": "soliloquy",
+      "position": "center"
+    },
+    {
+      "cmd": "text",
+      "char": "kanata",
+      "body": "……神が降るたびに、街は少しずつ壊れていく。人も、建物も、記憶も。俺だけが取り残されたみたいに、ここに立ち続けている。"
+    },
+    {
+      "cmd": "text",
+      "char": "kanata",
+      "body": "（この礼拝堂に足を踏み入れたのは、何年ぶりだろう。昔、誰かとここで約束をした気がする。もう、誰の顔も思い出せないけれど。）"
+    },
+    {
+      "cmd": "se",
+      "id": "glass_break"
+    },
+    {
+      "cmd": "effect",
+      "type": "shake",
+      "intensity": 0.4,
+      "duration": 0.6,
+      "color": "white"
+    },
+    {
+      "cmd": "sprite",
+      "char": "kanata",
+      "pose": "surprised",
+      "position": "center"
+    },
+    {
+      "cmd": "text",
+      "char": "kanata",
+      "body": "っ……！"
+    },
+    {
+      "cmd": "text",
+      "char": "narrator",
+      "body": "礼拝堂の奥――崩れた祭壇の後ろから、何かが倒れる音がした。"
+    },
+    {
+      "cmd": "bgm",
+      "id": "abandoned_chapel",
+      "fade": 1.5
+    },
+    {
+      "cmd": "sprite",
+      "char": "lilith",
+      "pose": "anxious",
+      "position": "right"
+    },
+    {
+      "cmd": "se",
+      "id": "footstep_soft"
+    },
+    {
+      "cmd": "text",
+      "char": "narrator",
+      "body": "祭壇の陰から現れたのは、一人の少女だった。白い髪、紫の瞳、そしてその背中には――折れた翼の痕跡。"
+    },
+    {
+      "cmd": "text",
+      "char": "lilith",
+      "body": "……っ、人間？ここに人間がいるの？"
+    },
+    {
+      "cmd": "sprite",
+      "char": "kanata",
+      "pose": "normal",
+      "position": "left"
+    },
+    {
+      "cmd": "text",
+      "char": "kanata",
+      "body": "それはこっちのセリフだ。こんな廃墟に何の用だ？"
+    },
+    {
+      "cmd": "sprite",
+      "char": "lilith",
+      "pose": "normal",
+      "position": "right"
+    },
+    {
+      "cmd": "text",
+      "char": "lilith",
+      "body": "……追われてる。神罰執行者（グリーフ）に。あなた、逃がしてくれる？"
+    },
+    {
+      "cmd": "text",
+      "char": "kanata",
+      "body": "グリーフ……？お前、神の欠片を持ってるのか？"
+    },
+    {
+      "cmd": "sprite",
+      "char": "lilith",
+      "pose": "surprised",
+      "position": "right"
+    },
+    {
+      "cmd": "text",
+      "char": "lilith",
+      "body": "知ってるの？……あなた、ただの人間じゃないでしょ。"
+    },
+    {
+      "cmd": "se",
+      "id": "door_crash"
+    },
+    {
+      "cmd": "effect",
+      "type": "shake",
+      "intensity": 0.8,
+      "duration": 0.8,
+      "color": "white"
+    },
+    {
+      "cmd": "bgm",
+      "id": "pursuit",
+      "fade": 0.5
+    },
+    {
+      "cmd": "sprite",
+      "char": "grief",
+      "pose": "normal",
+      "position": "center"
+    },
+    {
+      "cmd": "se",
+      "id": "heavy_footstep"
+    },
+    {
+      "cmd": "text",
+      "char": "narrator",
+      "body": "礼拝堂の正面扉が吹き飛んだ。雨と泥を纏い、仮面を付けた人型の影が三体、入り口を塞いだ。神罰執行者――マヨイの使徒だ。"
+    },
+    {
+      "cmd": "text",
+      "char": "grief",
+      "body": "逃がさない。神の欠片は回収する。邪魔をする者は――排除対象。"
+    },
+    {
+      "cmd": "sprite",
+      "char": "kanata",
+      "pose": "arm",
+      "position": "left"
+    },
+    {
+      "cmd": "text",
+      "char": "kanata",
+      "body": "……はあ。面倒くさいな。"
+    },
+    {
+      "cmd": "text",
+      "char": "kanata",
+      "body": "（なんで俺がこんなことに。でも、見捨てるのも性に合わない。）"
+    },
+    {
+      "cmd": "sprite",
+      "char": "lilith",
+      "pose": "anxious",
+      "position": "right"
+    },
+    {
+      "cmd": "text",
+      "char": "lilith",
+      "body": "あなた！逃げて！あいつらは――"
+    },
+    {
+      "cmd": "text",
+      "char": "kanata",
+      "body": "逃げない。俺がここで止める。お前は裏口から出ろ。"
+    },
+    {
+      "cmd": "se",
+      "id": "power_surge"
+    },
+    {
+      "cmd": "effect",
+      "type": "flash",
+      "intensity": 0.7,
+      "duration": 0.4,
+      "color": "white"
+    },
+    {
+      "cmd": "text",
+      "char": "narrator",
+      "body": "カナタの右手が光る。廃礼拝堂の空気が震え、古びたステンドグラスが細かく振動した。"
+    },
+    {
+      "cmd": "se",
+      "id": "combat_start"
+    },
+    {
+      "cmd": "effect",
+      "type": "glitch",
+      "intensity": 0.5,
+      "duration": 0.3,
+      "color": "white"
+    },
+    {
+      "cmd": "text",
+      "char": "grief",
+      "body": "……能力者。排除優先度、最上位に更新。"
+    },
+    {
+      "cmd": "se",
+      "id": "clash_heavy"
+    },
+    {
+      "cmd": "effect",
+      "type": "shake",
+      "intensity": 1.0,
+      "duration": 0.9,
+      "color": "white"
+    },
+    {
+      "cmd": "sprite",
+      "char": "grief",
+      "pose": "hide"
+    },
+    {
+      "cmd": "se",
+      "id": "explosion_small"
+    },
+    {
+      "cmd": "effect",
+      "type": "flash",
+      "intensity": 1.0,
+      "duration": 0.5,
+      "color": "white"
+    },
+    {
+      "cmd": "text",
+      "char": "narrator",
+      "body": "三体のグリーフが吹き飛んだ。壁が砕け、天井の一部が崩落する。雨が礼拝堂の中に降り込んだ。"
+    },
+    {
+      "cmd": "effect",
+      "type": "fade",
+      "intensity": 0.6,
+      "duration": 1.0,
+      "color": "black"
+    },
+    {
+      "cmd": "bgm",
+      "id": "descent",
+      "fade": 2.0
+    },
+    {
+      "cmd": "bg",
+      "id": "back_alley",
+      "transition": "crossfade"
+    },
+    {
+      "cmd": "sprite",
+      "char": "kanata",
+      "pose": "normal",
+      "position": "left"
+    },
+    {
+      "cmd": "sprite",
+      "char": "lilith",
+      "pose": "normal",
+      "position": "right"
+    },
+    {
+      "cmd": "se",
+      "id": "rain_light"
+    },
+    {
+      "cmd": "text",
+      "char": "narrator",
+      "body": "裏路地。雨足は弱まっていた。二人は廃礼拝堂を抜け、街の暗がりに身を潜めた。"
+    },
+    {
+      "cmd": "text",
+      "char": "lilith",
+      "body": "……助けてくれたの、なんで？"
+    },
+    {
+      "cmd": "sprite",
+      "char": "kanata",
+      "pose": "soliloquy",
+      "position": "left"
+    },
+    {
+      "cmd": "text",
+      "char": "kanata",
+      "body": "さあな。気まぐれだ。"
+    },
+    {
+      "cmd": "sprite",
+      "char": "lilith",
+      "pose": "smile",
+      "position": "right"
+    },
+    {
+      "cmd": "text",
+      "char": "lilith",
+      "body": "……嘘つき。あなた、ずっとこの街を守ろうとしてきた人でしょ。匂いでわかる。"
+    },
+    {
+      "cmd": "sprite",
+      "char": "kanata",
+      "pose": "surprised",
+      "position": "left"
+    },
+    {
+      "cmd": "text",
+      "char": "kanata",
+      "body": "……匂い？お前、何者だ。"
+    },
+    {
+      "cmd": "sprite",
+      "char": "lilith",
+      "pose": "normal",
+      "position": "right"
+    },
+    {
+      "cmd": "text",
+      "char": "lilith",
+      "body": "リリス。神の欠片を宿した、迷い子。……あなたは？"
+    },
+    {
+      "cmd": "text",
+      "char": "kanata",
+      "body": "カナタ。ただの、雨宿りをしていた男だ。"
+    },
+    {
+      "cmd": "text",
+      "char": "narrator",
+      "body": "雨の中、二人は互いの名を知った。それがこの街で何を意味するのか、まだ誰も知らない。"
+    },
+    {
+      "cmd": "flag",
+      "key": "MET_LILITH",
+      "value": true
+    },
+    {
+      "cmd": "flag",
+      "key": "GRIEF_ENCOUNTERED",
+      "value": true
+    },
+    {
+      "cmd": "flag",
+      "key": "CHAPTER01_COMPLETE",
+      "value": true
+    },
+    {
+      "cmd": "effect",
+      "type": "fade",
+      "intensity": 1.0,
+      "duration": 2.0,
+      "color": "black"
+    },
+    {
+      "cmd": "text",
+      "char": "narrator",
+      "body": "――第1話「出会い」　了"
+    }
+  ]
+}

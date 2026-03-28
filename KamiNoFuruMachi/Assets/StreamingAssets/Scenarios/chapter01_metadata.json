@@ -1,0 +1,82 @@
+{
+  "chapters": [
+    {
+      "chapterId": "chapter01",
+      "title": "第1話「出会い」",
+      "autoSaveSlot": 0,
+      "unlockCondition": null
+    },
+    {
+      "chapterId": "chapter02",
+      "title": "第2話「神の欠片」",
+      "autoSaveSlot": 1,
+      "unlockCondition": {
+        "flag": "CHAPTER01_COMPLETE",
+        "value": true
+      }
+    },
+    {
+      "chapterId": "chapter03",
+      "title": "第3話「路地裏の天使」",
+      "autoSaveSlot": 2,
+      "unlockCondition": {
+        "flag": "CHAPTER02_COMPLETE",
+        "value": true
+      }
+    },
+    {
+      "chapterId": "chapter04",
+      "title": "第4話「追跡者」",
+      "autoSaveSlot": 3,
+      "unlockCondition": {
+        "flag": "CHAPTER03_COMPLETE",
+        "value": true
+      }
+    },
+    {
+      "chapterId": "chapter05",
+      "title": "第5話「地下室の秘密」",
+      "autoSaveSlot": 4,
+      "unlockCondition": {
+        "flag": "CHAPTER04_COMPLETE",
+        "value": true
+      }
+    },
+    {
+      "chapterId": "chapter06",
+      "title": "第6話「エレオノラの真意」",
+      "autoSaveSlot": 5,
+      "unlockCondition": {
+        "flag": "CHAPTER05_COMPLETE",
+        "value": true
+      }
+    },
+    {
+      "chapterId": "chapter07",
+      "title": "第7話「降神の夜」",
+      "autoSaveSlot": 6,
+      "unlockCondition": {
+        "flag": "CHAPTER06_COMPLETE",
+        "value": true
+      }
+    },
+    {
+      "chapterId": "chapter08",
+      "title": "第8話「崩壊の予兆」",
+      "autoSaveSlot": 7,
+      "unlockCondition": {
+        "flag": "CHAPTER07_COMPLETE",
+        "value": true
+      }
+    },
+    {
+      "chapterId": "chapter09",
+      "title": "第9話「神の降る街で」",
+      "autoSaveSlot": 8,
+      "unlockCondition": {
+        "flag": "CHAPTER08_COMPLETE",
+        "value": true
+      }
+    }
+  ]
+}

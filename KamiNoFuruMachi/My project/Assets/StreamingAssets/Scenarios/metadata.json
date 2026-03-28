@@ -1,0 +1,13 @@
+{
+  "chapters": [
+    { "chapterId": "chapter01", "title": "第1話「出会い」",     "autoSaveSlot": 0, "unlockCondition": null },
+    { "chapterId": "chapter02", "title": "第2話「首筋の痕」",   "autoSaveSlot": 1, "unlockCondition": "CHAPTER01_COMPLETE" },
+    { "chapterId": "chapter03", "title": "第3話「帝国の騎士」", "autoSaveSlot": 2, "unlockCondition": "CHAPTER02_COMPLETE" },
+    { "chapterId": "chapter04", "title": "第4話「残留した意志」","autoSaveSlot": 3, "unlockCondition": "CHAPTER03_COMPLETE" },
+    { "chapterId": "chapter05", "title": "第5話「七日間」",     "autoSaveSlot": 4, "unlockCondition": "CHAPTER04_COMPLETE" },
+    { "chapterId": "chapter06", "title": "第6話「決断と名前」", "autoSaveSlot": 5, "unlockCondition": "CHAPTER05_COMPLETE" },
+    { "chapterId": "chapter07", "title": "第7話「四十秒」",     "autoSaveSlot": 6, "unlockCondition": "CHAPTER06_COMPLETE" },
+    { "chapterId": "chapter08", "title": "第8話「脱出」",       "autoSaveSlot": 7, "unlockCondition": "CHAPTER07_COMPLETE" },
+    { "chapterId": "chapter09", "title": "第9話「荒野の夜」",   "autoSaveSlot": 8, "unlockCondition": "CHAPTER08_COMPLETE" }
+  ]
+}

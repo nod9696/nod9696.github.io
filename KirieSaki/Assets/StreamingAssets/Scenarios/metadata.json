@@ -1,0 +1,19 @@
+{
+  "chapters": [
+    { "chapterId": "chapter00", "title": "序章「逆しまに月が落ちていく」",   "autoSaveSlot": 0,  "unlockCondition": null },
+    { "chapterId": "chapter01", "title": "第一章「翌朝、まだいる」",         "autoSaveSlot": 1,  "unlockCondition": "CHAPTER00_COMPLETE" },
+    { "chapterId": "chapter02", "title": "第二章「昼間のキリエ」",           "autoSaveSlot": 2,  "unlockCondition": "CHAPTER01_COMPLETE" },
+    { "chapterId": "chapter03", "title": "第三章「夜の街へ」",               "autoSaveSlot": 3,  "unlockCondition": "CHAPTER02_COMPLETE" },
+    { "chapterId": "chapter04", "title": "第四章「サキの部屋」",             "autoSaveSlot": 4,  "unlockCondition": "CHAPTER03_COMPLETE" },
+    { "chapterId": "chapter05", "title": "第五章「先を越した何か」",         "autoSaveSlot": 5,  "unlockCondition": "CHAPTER04_COMPLETE" },
+    { "chapterId": "chapter06", "title": "第六章「後退の夜」",               "autoSaveSlot": 6,  "unlockCondition": "CHAPTER05_COMPLETE" },
+    { "chapterId": "chapter07", "title": "第七章「川の名前」",               "autoSaveSlot": 7,  "unlockCondition": "CHAPTER06_COMPLETE" },
+    { "chapterId": "chapter08", "title": "第八章「間違い電話」",             "autoSaveSlot": 8,  "unlockCondition": "CHAPTER07_COMPLETE" },
+    { "chapterId": "chapter09", "title": "第九章「街の昼間」",               "autoSaveSlot": 9,  "unlockCondition": "CHAPTER08_COMPLETE" },
+    { "chapterId": "chapter10", "title": "独立章「夜の数え方」",             "autoSaveSlot": 10, "unlockCondition": "CHAPTER09_COMPLETE" },
+    { "chapterId": "chapter11", "title": "「白が満ちる夜に」",               "autoSaveSlot": 11, "unlockCondition": "CHAPTER10_COMPLETE" },
+    { "chapterId": "chapter12", "title": "第十章「人間が最初に泣いた夜」",   "autoSaveSlot": 12, "unlockCondition": "CHAPTER11_COMPLETE" },
+    { "chapterId": "chapter13", "title": "終章「逆しまに月が昇っていく」",   "autoSaveSlot": 13, "unlockCondition": "CHAPTER12_COMPLETE" },
+    { "chapterId": "chapter14", "title": "後日談「砂糖なしの朝に」",         "autoSaveSlot": 14, "unlockCondition": "CHAPTER13_COMPLETE" }
+  ]
+}
