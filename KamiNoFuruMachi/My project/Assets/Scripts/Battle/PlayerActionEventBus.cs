@@ -15,6 +15,6 @@ namespace KamiNoFuruMachi
     {
         public static event Action<PlayerActionEvent> OnActionPerformed;
 
-        public static void Publish(PlayerActionEvent evt) => throw new System.NotImplementedException();
+        public static void Publish(PlayerActionEvent evt) => OnActionPerformed?.Invoke(evt);
     }
 }
