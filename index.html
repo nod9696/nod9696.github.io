@@ -66,10 +66,37 @@
       color: #fff;
       text-shadow: 0 0 4px rgba(0,0,0,0.8);
     }
+
+    nav.site-nav {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    nav.site-nav a {
+      font-size: 12px;
+      color: #888;
+      text-decoration: none;
+      padding: 6px 12px;
+      border: 1px solid #222;
+      border-radius: 20px;
+    }
+
+    nav.site-nav a.current {
+      color: #6c7aff;
+      border-color: #6c7aff;
+      background: #6c7aff18;
+    }
   </style>
 </head>
 
 <body>
+  <nav class="site-nav">
+    <a href="index.html" class="current">Gallery</a>
+    <a href="novel.html">小説作成チーム</a>
+    <a href="skills.html">Skills</a>
+  </nav>
+
   <h1>Concept Art Gallery</h1>
   <p class="subtitle">nod9696 / concept art</p>
 

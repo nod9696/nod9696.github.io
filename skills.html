@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Skill Library</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0d0e14;
+      color: #e8e8f0;
+      font-family: -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif;
+      min-height: 100vh;
+      padding: 20px 16px 48px;
+    }
+
+    nav.site-nav {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    nav.site-nav a {
+      font-size: 12px;
+      color: #888;
+      text-decoration: none;
+      padding: 6px 12px;
+      border: 1px solid #2e2f3e;
+      border-radius: 20px;
+    }
+
+    nav.site-nav a.current {
+      color: #6c7aff;
+      border-color: #6c7aff;
+      background: #6c7aff18;
+    }
+
+    h1 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #fff;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 28px;
+    }
+
+    h2.category {
+      font-size: 13px;
+      font-weight: 600;
+      color: #6c7aff;
+      letter-spacing: 0.03em;
+      margin: 28px 0 12px;
+    }
+
+    h2.category:first-of-type { margin-top: 0; }
+
+    .skill-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .skill-card {
+      border: 1px solid #2e2f3e;
+      border-radius: 12px;
+      background: #141520;
+      padding: 14px;
+    }
+
+    .skill-header {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .skill-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      font-family: monospace;
+    }
+
+    .skill-tag {
+      font-size: 10px;
+      color: #6c7aff;
+      background: #6c7aff18;
+      border-radius: 20px;
+      padding: 2px 9px;
+    }
+
+    .skill-desc {
+      font-size: 13px;
+      line-height: 1.7;
+      color: #ccd;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="site-nav">
+    <a href="index.html">Gallery</a>
+    <a href="novel.html">小説作成チーム</a>
+    <a href="skills.html" class="current">Skills</a>
+  </nav>
+
+  <h1>🗂️ Skill Library</h1>
+  <p class="subtitle">貯めてきた Claude Code スキルの一覧。スマホのチャットからも追加できます。</p>
+
+  <h2 class="category">神の降る街プロジェクト</h2>
+  <div class="skill-list">
+
+    <!-- ↓ここをコピペして増やす。skill-name・skill-tag・skill-descだけ変える -->
+
+    <div class="skill-card">
+      <div class="skill-header">
+        <span class="skill-name">chara-polish</span>
+        <span class="skill-tag">キャラクター</span>
+      </div>
+      <p class="skill-desc">キャラクター作成・ポリッシュチームを起動してください。</p>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-header">
+        <span class="skill-name">edit-novel</span>
+        <span class="skill-tag">編集</span>
+      </div>
+      <p class="skill-desc">神の降る街の商業レベル編集チームを起動してください。</p>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-header">
+        <span class="skill-name">entame-feedback</span>
+        <span class="skill-tag">フィードバック</span>
+      </div>
+      <p class="skill-desc">ラノベ作家（西尾維新・奈須きのこ・成田良悟）の視点によるフィードバックとアイディア出しチームを起動してください。</p>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-header">
+        <span class="skill-name">game-spec</span>
+        <span class="skill-tag">仕様書</span>
+      </div>
+      <p class="skill-desc">神の降る街のノベルADVゲーム仕様書作成チームを起動してください。</p>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-header">
+        <span class="skill-name">spec-init</span>
+        <span class="skill-tag">仕様書</span>
+      </div>
+      <p class="skill-desc">ゲーム仕様書プロジェクトを新規初期化してください。</p>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-header">
+        <span class="skill-name">spec-status</span>
+        <span class="skill-tag">仕様書</span>
+      </div>
+      <p class="skill-desc">ゲーム仕様書の整合性チェックと更新状況を確認してください。</p>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-header">
+        <span class="skill-name">spec-update</span>
+        <span class="skill-tag">仕様書</span>
+      </div>
+      <p class="skill-desc">ゲーム仕様書の指定セクションを差分更新してください。</p>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-header">
+        <span class="skill-name">unity-impl</span>
+        <span class="skill-tag">Unity</span>
+      </div>
+      <p class="skill-desc">神の降る街のUnity実装チームを起動してください。</p>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-header">
+        <span class="skill-name">unity-proto</span>
+        <span class="skill-tag">Unity</span>
+      </div>
+      <p class="skill-desc">神の降る街のUnityプロトタイプコードを生成します。</p>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-header">
+        <span class="skill-name">notion-sync</span>
+        <span class="skill-tag">連携</span>
+      </div>
+      <p class="skill-desc">Notion同期スクリプトを実行してください。</p>
+    </div>
+
+    <!-- ↑追加したぶんだけ増やせる -->
+
+  </div>
+
+</body>
+</html>

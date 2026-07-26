@@ -4,10 +4,11 @@ This file provides context for AI assistants working in this repository.
 
 ## Project Overview
 
-A GitHub Pages static site with two features:
+A GitHub Pages static site with three features:
 
 1. **Concept Art Gallery** (`index.html`) — displays JPG images in a responsive dark-themed grid
 2. **Novel Writing Team** (`novel.html` + `novel_team.py`) — orchestrates 5 Claude agents sequentially to write a short story from a user-supplied theme
+3. **Skill Library** (`skills.html`) — a static catalog of the user's Claude Code skills, grouped by category, for reference from any device
 
 The site is deployed directly from the repository root as a GitHub Pages site. There is no build step.
 
@@ -17,6 +18,7 @@ The site is deployed directly from the repository root as a GitHub Pages site. T
 /
 ├── index.html        # Concept art gallery (landing page)
 ├── novel.html        # Web UI for multi-agent novel generation
+├── skills.html        # Static catalog of Claude Code skills
 ├── novel_team.py     # CLI version of the same novel generation system
 ├── requirements.txt  # Python dependency: anthropic>=0.40.0
 ├── art01.JPG         # Gallery image assets
@@ -60,6 +62,7 @@ Each agent receives all previous agents' outputs as context (progressive accumul
 - **Image naming**: `art01.JPG`, `art_01.JPG`, `art_02.JPG`, `art_03.JPG` — note inconsistent prefix style (do not rename without updating HTML)
 - **Image paths**: `art01.JPG` is served from root; `art_02.JPG` and `art_03.JPG` are referenced via `images/` subdirectory in index.html (subdirectory does not exist yet — those images will 404 until the directory is created or paths fixed)
 - **Font stack**: `-apple-system, "Hiragino Sans", "Yu Gothic", sans-serif` for Japanese support
+- **Navigation**: All three pages (`index.html`, `novel.html`, `skills.html`) share a `nav.site-nav` bar linking to each other; keep it in sync when adding a new top-level page
 
 ## Development Workflow
 
@@ -81,6 +84,16 @@ Open `novel.html` in a browser (or serve via any static server). Enter your Anth
 
 1. Place `.JPG` files in the repository root (or an `images/` subdirectory)
 2. Copy the template block in `index.html:78` and update the `src` and label text
+
+### Adding to the Skill Library
+
+`skills.html` is a hand-maintained, static catalog — there is no backing data file or build step. To add a skill:
+
+1. Copy the `.skill-card` template block inside `skills.html` (marked with an HTML comment, following the same convention as `index.html:78`)
+2. Update `skill-name` (the invocation name), `skill-tag` (short category label), and `skill-desc` (one-line description)
+3. Add a new `<h2 class="category">` heading if the skill doesn't fit an existing category
+
+Because this is a plain static page, entries can be added from any Claude Code session — including from a mobile chat client — by asking Claude to edit, commit, and push to `skills.html`.
 
 ### Deploying
 
