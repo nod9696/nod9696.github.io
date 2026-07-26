@@ -92,8 +92,11 @@ Open `novel.html` in a browser (or serve via any static server). Enter your Anth
 1. Copy the `.skill-card` template block inside `skills.html` (marked with an HTML comment, following the same convention as `index.html:78`)
 2. Update `skill-name` (the invocation name), `skill-tag` (short category label), and `skill-desc` (one-line description)
 3. Add a new `<h2 class="category">` heading if the skill doesn't fit an existing category
+4. If the full skill file (YAML frontmatter + instructions body, the actual `SKILL.md`-style content) is available, save it verbatim under `skills/<skill-name>.md` and link it from the card with `<a class="skill-link" href="skills/<skill-name>.md">→ 全文を見る</a>` — see `skills/game-spec-format.md` for an example. Cards without a saved full-text file simply omit the link.
 
 Because this is a plain static page, entries can be added from any Claude Code session — including from a mobile chat client — by asking Claude to edit, commit, and push to `skills.html`.
+
+Note: project-specific reference documents (e.g. game spec drafts for 神の降る街) are not skills and belong with the rest of that project's material under `KamiNoFuruMachi/specs/`, not in `skills/`.
 
 ### Deploying
 
