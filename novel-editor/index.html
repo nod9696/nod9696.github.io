@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>硯 -Suzuri- | 小説執筆アプリ</title>
+<meta name="description" content="章・シーン単位で書き進める、静かな小説執筆アプリ">
+<meta name="theme-color" content="#1E2A3F">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Noto+Serif+JP:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="app" class="app">
+
+  <!-- ===== Header ===== -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button id="btnToggleSidebar" class="icon-btn" title="目次を開閉" aria-label="目次を開閉">
+        <svg viewBox="0 0 24 24" width="18" height="18"><path d="M3 5h18M3 12h18M3 19h18" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+      </button>
+      <span class="brand">硯 <span class="brand-sub">suzuri</span></span>
+    </div>
+
+    <div class="topbar-center">
+      <span id="sceneBreadcrumb" class="breadcrumb">プロジェクトを選択してください</span>
+    </div>
+
+    <div class="topbar-right">
+      <span id="saveStatus" class="save-status" data-state="idle">—</span>
+      <button id="btnPlot" class="icon-btn" title="ログライン・プロット・ビートシート" aria-label="プロット">
+        <svg viewBox="0 0 24 24" width="18" height="18"><path d="M4 4h16M4 9h10M4 14h16M4 19h10" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+      </button>
+      <button id="btnFocus" class="icon-btn" title="集中モード" aria-label="集中モード">
+        <svg viewBox="0 0 24 24" width="18" height="18"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button id="btnSettings" class="icon-btn" title="設定・Drive同期" aria-label="設定">
+        <svg viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="body-row">
+
+    <!-- ===== Sidebar: project & tree ===== -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-section">
+        <label class="sidebar-label">作品</label>
+        <select id="projectSelect" class="project-select"></select>
+        <div class="sidebar-actions">
+          <button id="btnNewProject" class="text-btn">＋ 新規作品</button>
+          <button id="btnRenameProject" class="text-btn">名前変更</button>
+        </div>
+      </div>
+
+      <div class="sidebar-section tree-section">
+        <div class="sidebar-label-row">
+          <label class="sidebar-label">目次</label>
+          <button id="btnAddChapter" class="text-btn small">＋ 章</button>
+        </div>
+        <div id="tree" class="tree"></div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="progress-summary">
+          <div class="progress-summary-row">
+            <span>総文字数</span>
+            <strong id="totalCharCount">0</strong>
+          </div>
+          <div class="progress-summary-row" id="goalRow" hidden>
+            <span>目標</span>
+            <strong id="goalCharCount">0</strong>
+          </div>
+          <div class="progress-bar-track" id="goalBarTrack" hidden>
+            <div class="progress-bar-fill" id="goalBarFill"></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===== Editor ===== -->
+    <main class="editor-area">
+      <div id="writeView" class="write-view">
+        <div class="paper-wrap">
+          <div class="paper">
+            <input id="sceneTitle" class="scene-title" placeholder="シーン名" autocomplete="off">
+            <div class="scene-beat-row">
+              <label for="sceneBeatSelect" class="scene-beat-label">ビート</label>
+              <select id="sceneBeatSelect" class="scene-beat-select"></select>
+              <span id="sceneBeatAllocation" class="scene-beat-allocation"></span>
+            </div>
+            <textarea id="sceneSummary" class="scene-summary-textarea" rows="2" placeholder="このシーンを一言で要約（例：主人公が手紙を読んで旅立ちを決意する）"></textarea>
+            <textarea id="editor" class="editor-textarea" placeholder="ここから書き始める……" spellcheck="false"></textarea>
+          </div>
+        </div>
+
+        <!-- manuscript-paper tick rail (signature element) -->
+        <div id="tickRail" class="tick-rail" aria-hidden="true">
+          <div id="tickRailFill" class="tick-rail-fill"></div>
+          <div id="tickMarks" class="tick-marks"></div>
+        </div>
+      </div>
+
+      <div id="plotView" class="plot-view" hidden>
+        <div class="plot-wrap">
+
+          <section class="plot-card">
+            <h2 class="plot-card-title">ログライン</h2>
+            <p class="plot-card-hint">「〈主人公〉が〈目的〉のために〈障害〉と向き合う物語」——一文か二文で。</p>
+            <textarea id="loglineInput" class="plot-textarea logline-textarea" rows="3" placeholder="例）記憶を失った剣士が、自分が滅ぼした国の生き残りと旅をしながら、失われた過去と向き合っていく。"></textarea>
+          </section>
+
+          <section class="plot-card">
+            <h2 class="plot-card-title">あらすじ・プロット</h2>
+            <p class="plot-card-hint">全体の流れを自由形式でメモする場所。箇条書きでも構いません。</p>
+            <textarea id="synopsisInput" class="plot-textarea synopsis-textarea" rows="8" placeholder="起承転結、主要な転換点、結末のイメージなど……"></textarea>
+          </section>
+
+          <section class="plot-card">
+            <h2 class="plot-card-title">Save the Cat ビートシート</h2>
+            <p class="plot-card-hint">全15ビート。％は物語全体に対するおおよその位置の目安です。</p>
+            <div id="beatList" class="beat-list"></div>
+          </section>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ===== Bottom status bar ===== -->
+  <footer class="statusbar">
+    <span id="sceneCharCount">0 字</span>
+    <span class="statusbar-dot">・</span>
+    <span id="sceneManuscriptPages">0.0 枚（400字換算）</span>
+    <span class="statusbar-dot">・</span>
+    <span id="lastSavedAt">未保存</span>
+    <span class="statusbar-spacer"></span>
+    <span id="focusHint" class="focus-hint" hidden>Esc で集中モード解除</span>
+  </footer>
+</div>
+
+<!-- ===== Settings / Drive sync modal ===== -->
+<div id="settingsModal" class="modal-overlay" hidden>
+  <div class="modal">
+    <div class="modal-header">
+      <h2>設定</h2>
+      <button id="btnCloseSettings" class="icon-btn" aria-label="閉じる">
+        <svg viewBox="0 0 24 24" width="18" height="18"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <section class="modal-section">
+        <h3>執筆目標</h3>
+        <label class="field-label" for="goalInput">この作品の目標文字数（任意）</label>
+        <input id="goalInput" type="number" min="0" step="100" class="field-input" placeholder="例）80000">
+      </section>
+
+      <section class="modal-section">
+        <h3>Google Drive 同期</h3>
+        <p class="modal-note">
+          自分の Google Cloud プロジェクトで OAuth クライアント ID を発行し、下に貼り付けてください。
+          作品データは Drive の専用フォルダに JSON として保存されます。
+        </p>
+        <label class="field-label" for="driveClientId">OAuth クライアント ID</label>
+        <input id="driveClientId" type="text" class="field-input" placeholder="xxxxxxxxxx.apps.googleusercontent.com">
+        <button id="btnSaveClientId" class="text-btn">保存</button>
+
+        <div id="driveAuthRow" class="drive-auth-row">
+          <button id="btnDriveSignIn" class="secondary-btn">Google アカウントで接続</button>
+          <span id="driveAuthStatus" class="drive-status">未接続</span>
+        </div>
+
+        <div id="driveActionsRow" class="drive-actions-row" hidden>
+          <button id="btnDriveUpload" class="secondary-btn">今すぐ Drive に保存</button>
+          <button id="btnDriveDownload" class="secondary-btn">Drive から復元</button>
+        </div>
+        <p id="driveSyncStatus" class="modal-note small"></p>
+
+        <details class="setup-details">
+          <summary>OAuth クライアント ID の取得方法</summary>
+          <ol>
+            <li>Google Cloud Console でプロジェクトを作成</li>
+            <li>「APIとサービス」→「有効なAPI」から Google Drive API を有効化</li>
+            <li>「認証情報」→「OAuth クライアント ID を作成」→ 種類は「ウェブ アプリケーション」</li>
+            <li>「承認済みの JavaScript 生成元」にこのアプリの URL（例: https://nod9696.github.io）を追加</li>
+            <li>発行されたクライアント ID を上の欄に貼り付けて保存</li>
+          </ol>
+        </details>
+      </section>
+
+      <section class="modal-section">
+        <h3>Notion 同期</h3>
+        <p class="modal-note">
+          Notion APIはブラウザから直接呼べないため、中継役として小さなGoogle Apps Scriptを
+          自分のアカウントにデプロイして使います。作品データは指定した親ページの下に、
+          プロジェクトごとの子ページとして保存されます。
+        </p>
+        <label class="field-label" for="notionToken">Notion インテグレーションのシークレット</label>
+        <input id="notionToken" type="text" class="field-input" placeholder="ntn_... または secret_...">
+        <label class="field-label" for="notionParentPageId">保存先の親ページ ID（またはURL）</label>
+        <input id="notionParentPageId" type="text" class="field-input" placeholder="Notionページを開いてURLからコピー">
+        <label class="field-label" for="notionProxyUrl">GAS プロキシ URL</label>
+        <input id="notionProxyUrl" type="text" class="field-input" placeholder="https://script.google.com/macros/s/.../exec">
+        <button id="btnSaveNotionConfig" class="text-btn">保存</button>
+
+        <div class="drive-auth-row">
+          <button id="btnNotionTest" class="secondary-btn">接続確認</button>
+          <span id="notionAuthStatus" class="drive-status">未設定</span>
+        </div>
+        <div class="drive-actions-row">
+          <button id="btnNotionUpload" class="secondary-btn">今すぐ Notion に保存</button>
+          <button id="btnNotionDownload" class="secondary-btn">Notion から復元</button>
+        </div>
+        <p id="notionSyncStatus" class="modal-note small"></p>
+
+        <details class="setup-details">
+          <summary>Notion連携の設定方法</summary>
+          <ol>
+            <li><a href="https://www.notion.so/my-integrations" target="_blank" rel="noopener">notion.so/my-integrations</a> で「New integration」→ Internal を選び作成</li>
+            <li>発行された「Internal Integration Secret」をコピーして上の欄に貼り付け</li>
+            <li>Notion側でバックアップ用の新規ページを作成（例：Suzuri Novel Backups）</li>
+            <li>そのページの右上「…」→「コネクト」→ 作成したインテグレーションを追加して共有</li>
+            <li>ページを開いた状態でURLからページIDをコピーし、上の欄に貼り付け</li>
+            <li>下の「GASプロキシの作り方」の手順でスクリプトをデプロイし、URLを貼り付けて保存</li>
+          </ol>
+        </details>
+        <details class="setup-details">
+          <summary>GASプロキシの作り方</summary>
+          <ol>
+            <li><a href="https://script.google.com/" target="_blank" rel="noopener">script.google.com</a> で新規プロジェクトを作成</li>
+            <li>配布した <code>notion-proxy.gs</code> の中身を丸ごと貼り付け</li>
+            <li>「デプロイ」→「新しいデプロイ」→種類は「ウェブアプリ」</li>
+            <li>実行ユーザー：自分／アクセスできるユーザー：全員 に設定してデプロイ</li>
+            <li>発行された <code>/exec</code> で終わるURLを上の「GASプロキシURL」欄に貼り付け</li>
+          </ol>
+        </details>
+      </section>
+
+      <section class="modal-section">
+        <h3>バックアップ</h3>
+        <p class="modal-note">端末内データを手元にも書き出せます。</p>
+        <div class="drive-actions-row">
+          <button id="btnExportJson" class="secondary-btn">JSON をエクスポート</button>
+          <button id="btnImportJson" class="secondary-btn">JSON をインポート</button>
+          <input id="importFileInput" type="file" accept="application/json" hidden>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Simple prompt dialog (replaces window.prompt for consistency) ===== -->
+<div id="promptModal" class="modal-overlay" hidden>
+  <div class="modal modal-small">
+    <div class="modal-body">
+      <label id="promptLabel" class="field-label" for="promptInput">名前</label>
+      <input id="promptInput" type="text" class="field-input" autocomplete="off">
+      <div class="prompt-actions">
+        <button id="promptCancel" class="text-btn">キャンセル</button>
+        <button id="promptOk" class="secondary-btn">決定</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://apis.google.com/js/api.js" async defer></script>
+<script src="db.js"></script>
+<script src="drive-sync.js"></script>
+<script src="notion-sync.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
